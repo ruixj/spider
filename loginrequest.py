@@ -14,7 +14,7 @@ def login():
     loginUrl = 'http://wecenter.dev.hihwei.com/api/account/login_process/'
     result = opener.open(loginUrl,postdata)
     cookie.save(ignore_discard=True, ignore_expires=True)
-    print result.read()
+    #print result.read()
     return result
 
 def postarticle():
@@ -33,7 +33,7 @@ def postarticle():
 
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
     response = opener.open(req)
-    print response.read() 
+    #print response.read() 
     return response
 
 def geturls(start_id,page_size,page_num):
@@ -47,10 +47,10 @@ def geturls(start_id,page_size,page_num):
     
     req = urllib2.Request('http://m.lelianyanglao.com/index.php?m=api&a=get_splider_list',data,headers)
     response = urllib2.urlopen(req)
-    print response.read()
+    #print response.read()
     return response
 
-def getPageContent(url)
+def getPageContent(url):
     user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
     values = {
              }
@@ -59,14 +59,12 @@ def getPageContent(url)
     
     req = urllib2.Request(url,data,headers)
     response = urllib2.urlopen(req)
-    print response.read()
+    #print response.read()
     return response
 
    
 
 if __name__ == '__main__':
     #login()
-    geturls(0,20,1)
-
-     
-    
+    res = geturls(0,20,1)
+    print res.read()
