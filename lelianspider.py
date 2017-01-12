@@ -7,6 +7,17 @@ import string
 import re
 import time
 import os
+#import md5
+import hashlib
+
+APPKEY = "04a13318bc680b9e4da7bba876224a95"
+FIREFOX= 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'
+
+def getsign(appkey,apiname):
+    src = apiname+appkey
+    m1  = hashlib.md5()
+    m1.update(src)
+    return m1.hexdigest()
 
 def login(loginName,loginPwd):
     filename = 'cookie.txt'
@@ -16,7 +27,11 @@ def login(loginName,loginPwd):
                 'user_name':loginName,
                 'password':loginPwd
             })
-    loginUrl = 'http://wecenter.dev.hihwei.com/api/account/login_process/'
+
+    signkey = getsign(APPKEY,'account')
+
+    loginUrl = 'http://wc.lelianyanglao.com/api/account/login_process/?mobile_sign='+signkey
+    print loginUrl
     result = opener.open(loginUrl,postdata)
     cookie.save(ignore_discard=True, ignore_expires=True)
     loginres = result.read()
@@ -26,21 +41,28 @@ def postarticle(title,content):
     cookie = cookielib.MozillaCookieJar()
     cookie.load('cookie.txt', ignore_discard=True, ignore_expires=True)
 
-    user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
+    #user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
 
     values = {'title':title,
-              'message':content
+              'message':content,
+              'category_id':1
              }
 
-    headers = {'User-Agent':user_agent}
+    #headers = {'User-Agent':user_agent}
     data    = urllib.urlencode(values)
     
-    req = urllib2.Request('http://wecenter.dev.hihwei.com/api/publish/publish_article/',data,headers)
+    signkey = getsign(APPKEY,'publish')
 
+
+    publishUrl = 'http://wc.lelianyanglao.com/api/publish/publish_article/?mobile_sign='+signkey
+    print publishUrl
+    req = urllib2.Request(publishUrl,data)
+
+    #req.add_header('User-agent',FIREFOX)
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
     response = opener.open(req)
     #print response.read() 
-    return response
+    return response.read()
 
 def geturls(start_id,page_size,page_num):
     user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
@@ -79,7 +101,7 @@ def getImagesInWxPage(page):
 
     wxpsoup = BeaufifulSoup(page)
     #1. find img 
-    wxpsoup.find_all("img",data-src=True)
+    #wxpsoup.find_all("img",data-src=True)
 
     #2. store it into cloud and get the url of the img
     #3. replace the img src in the page with the url
@@ -103,11 +125,8 @@ def savePage(name,content):
     print u"Saving page", name
     f.write(content)
 
-if __name__ == '__main__':
-    print u"你好世界" 
-    #while True:
-    #    time.sleep(60*60)
 
+def main_process():
     start_id = 0;
     jsonUrlsStr= geturls(start_id,20,1)
     if jsonUrlsStr:
@@ -126,8 +145,19 @@ if __name__ == '__main__':
                     pageContent = getPageContent(record["link_url"])
                     
                     title = record["title"]
-                    mkdir(title)
-                    savePage(title,pageContent)
-                    #login("ustb_ruixj@163.com","ruiking")
+                    #mkdir(title)
+                    #savePage(title,pageContent)
+                    login("tangzhen","123456")
                     #postarticle(title,pageContent)
+                    
+if __name__ == '__main__':
+    print u"你好世界" 
+    #while True:
+    #    time.sleep(60*60)
 
+    res = login('tangzhen','123456')
+
+    print res
+
+    res = postarticle('from python','from python')
+    print res
