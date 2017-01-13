@@ -1,4 +1,6 @@
+# -*- coding: UTF-8 -*-
 import re
+
 def Html2UBB(content):
     #以下是将html标签转为ubb标签
     pattern = re.compile( '<a href=\"([sS]+?)\"[^>]*>([sS]+?)</a>',re.I)
@@ -28,6 +30,6 @@ def Html2UBB(content):
     content = content.replace('&','&')
     return content
 
-if __name__ = '__main__':
+if __name__ == '__main__':
     content = "<html> </html>"
     Html2UBB(content)
