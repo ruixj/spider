@@ -10,7 +10,9 @@ import os
 #import md5
 import hashlib
 from html2ubb import *
+import bs4
 from bs4 import BeautifulSoup
+from putimg2alioss import * 
 
 APPKEY   = "04a13318bc680b9e4da7bba876224a95"
 FIREFOX  = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'
@@ -55,9 +57,9 @@ def postarticle(title,content):
     title    = title.encode('utf-8')
     print title
  
-    content = Html2UBB(content)
+    #content = Html2UBB(content)
     #content = urllib.quote(content)
-    #content = content.encode('utf-8')
+    content = content.encode('utf-8')
 
     values = {'title':title,
               'message':content,
@@ -108,15 +110,59 @@ def getPageContent(url):
             print u"Fail to get page from ",url
             return None
 
-def getImagesInWxPage(page):
+def getImgWithSrc(page,pageSeq):
     if not page:
         print u"invalid page"
 
     wxpsoup = BeautifulSoup(page)
+    #getTextAndImg(wxpsoup)
     #1. find img 
-    datasrcImgList = wxpsoup.find_all("img",attrs={'data-src': True})
+    datasrcImgList = wxpsoup.find_all("img",attrs={'src': True})
+    imgSeq = 1
     for img in datasrcImgList:
-        imgurl = img['data-src']
+        imgurl = img['src']
+        imgExt = 'jpg'  #getImgExt(imgurl)
+        imgName = getImgName(pageSeq,'src',imgSeq,imgExt)
+        if imgurl == '':
+            imgSeq += 1
+            continue
+
+        if(not checkUrlWithHttp(imgurl)):
+            imgurl = "http:" + imgurl
+
+        #print imgurl
+        resurl = storeImg2AliOss(imgurl,imgName)
+        #print resurl
+        img['src'] = resurl
+        imgSeq += 1
+
+    return wxpsoup.prettify()
+
+
+def getWxImgInPage(page,pageSeq,attr):
+    if not page:
+        print u"invalid page"
+
+    wxpsoup = BeautifulSoup(page)
+    #getTextAndImg(wxpsoup)
+    #1. find img 
+    datasrcImgList = wxpsoup.find_all("img",attrs={attr: True})
+    imgSeq = 1
+    for img in datasrcImgList:
+        imgurl = img[attr]
+        imgExt = getImgExt(imgurl)
+        imgName = getImgName(pageSeq,attr,imgSeq,imgExt)
+        #print 'before checking img url', imgurl
+        if(not checkUrlWithHttp(imgurl)):
+            imgurl = "http:" + imgurl
+
+        resurl = storeImg2AliOss(imgurl,imgName)
+        #print resurl
+        img['src'] = resurl
+        imgSeq +=1
+
+    return wxpsoup.prettify()
+
 
     #     
     #2. store it into cloud and get the url of the img
@@ -137,6 +183,153 @@ def getWxImage2Local(url):
     #        return None
 
 
+def getTextAndImg(page):
+    wxsoup = BeautifulSoup(page)
+    body = wxsoup.body 
+    #print body 
+    #print body.name
+    #print content.string
+    #print wxsoup.body.contents
+    #print  body.next_element.name
+    newContent = '' 
+    for element in body.next_elements:
+        #print(repr(element))
+        if isinstance(element, bs4.element.Tag):
+            if(element.name == 'p'):
+                newContent += str(element)
+                newContent += '\n'
+            elif (element.name == 'img'):
+                newContent += str(element)
+                newContent += '\n'
+
+            #return t.get_text().encode('utf-8')
+        #elif isinstance(t, bs4.element.NavigableString):
+        #    return t.string.encode('utf-8')
+    return newContent
+
+def getTextAndImg2(page):
+    wxsoup = BeautifulSoup(page)
+    lastElement = body = wxsoup.body 
+    newContent = '' 
+    #for element in body.next_elements:
+        #if isinstance(element, bs4.element.Tag):
+        #    if(element.name == 'p'):
+        #        newContent += str(element)
+        #        newContent += '\n'
+        #    elif (element.name == 'img'):
+        #        newContent += str(element)
+        #        newContent += '\n'
+
+    i = 1
+    while lastElement:
+        if isinstance(lastElement, bs4.element.Tag):
+            if(lastElement.name == 'p'):
+                print 'I am p'
+                newContent += str(lastElement)
+                newContent += '\n'
+            elif (lastElement.name == 'img'):
+                newContent += str(lastElement)
+                newContent += '\n'
+        print lastElement
+        print type(lastElement)
+        if i > 7:
+            break
+        i += 1
+        lastElement = lastElement.next_element
+
+
+    #print newContent
+    return newContent
+
+def getTextAndImg2(page):
+    wxsoup = BeautifulSoup(page)
+    lastElement = body = wxsoup.body 
+    newContent = '' 
+    for element in body.next_elements:
+        if isinstance(element,bs4.element.Tag):
+            if(element.name == 'script'):
+                continue
+
+    i = 1
+    while lastElement:
+        if isinstance(lastElement, bs4.element.Tag):
+            if(lastElement.name == 'p'):
+                print 'I am p'
+                newContent += str(lastElement)
+                newContent += '\n'
+            elif (lastElement.name == 'img'):
+                newContent += str(lastElement)
+                newContent += '\n'
+        print lastElement
+        print type(lastElement)
+        if i > 7:
+            break
+        i += 1
+        lastElement = lastElement.next_element
+
+
+    #print newContent
+    return newContent
+
+def getExecludeImg(startElem,content):
+    for element in startElem.next_siblings:
+        if isinstance(element,bs4.element.Tag):
+            if(element.name == 'script'):
+                continue
+        #content += str(element)
+        print element
+        #getExecludeImg(element.next_element,content)
+
+def getTextAndImg3(page):
+    wxsoup = BeautifulSoup(page)
+    firstElem = wxsoup.body.next_element
+    content   = ''
+    getExecludeImg(firstElem,content)
+
+def processChildren(elem,newsoup):
+    print len(elem.contents)
+    for child in elem.contents:
+        print 'child'
+        print child.name
+        if isinstance(child,bs4.element.Tag):
+            if (child.name == 'p'):
+                #append this element to new content
+                #newp = newsoup.new_tag('p')
+                #for elem in child.contents :
+                #    newp.append(elem)
+                print child.name
+                #tag = child.extract()
+                newsoup.apend(tag)
+            elif(child.name == 'img'):
+                #tag = child.extract()
+                newsoup.append(tag)
+            else:
+                processChildren(child,newsoup)
+            
+        elif isinstance(child,bs4.element.NavigableString):
+            newsoup.append(child)
+        else:
+            pass
+
+
+def getTextAndImg4(page,newsoup):
+    wxsoup = BeautifulSoup(page)
+    bodyElem = wxsoup.body
+    print bodyElem.prettify()
+    print bodyElem.contents[0]
+    #loop through the children
+    #processChildren(bodyElem,newsoup)
+
+def getBodyWithoutScript(page):
+    wxsoup = BeautifulSoup(page)
+    content = ''
+    scripts= wxsoup.find_all("script")
+    for script in scripts:
+        script.decompose()
+
+    content = str(wxsoup.body)
+    return content
+                
 def mkdir(path):
     path = path.strip()
     isExists = os.path.exists(path)
@@ -153,11 +346,13 @@ def savePage(name,content):
     fileName = name + "/" + name + ".html"
     f = open(fileName,"w+")
     print u"Saving page", name
+    content = content.encode('utf-8')
     f.write(content)
 
 
 def loop_body(last_startid):
     jsonUrlsStr= geturls(last_startid,20,1)
+    pageSeq = 1
     if jsonUrlsStr:
        jsonUrlObj = json.loads(jsonUrlsStr)
 
@@ -173,14 +368,27 @@ def loop_body(last_startid):
                     #print record["link_url"],'\n'
                     pageContent = getPageContent(record["link_url"])
                     title = record["title"]
-                    #getImagesInWxPage(pageContent)
+                    pageContent  = getBodyWithoutScript(pageContent)
+
+                    #pageContent  = getImgWithSrc(pageContent,pageSeq)
+
+                    #pageContent  = getWxImgInPage(pageContent,pageSeq,'data-src')
+                    #pageContent  = getWxImgInPage(pageContent,pageSeq,'data-backsrc')
+
+
+                    wxnewsoup = BeautifulSoup("")
+                    #root_tag = wxsoup.new_tag('div')
+                    getTextAndImg4(pageContent,wxnewsoup)
+
+                    pageSeq += 1
+
                     #mkdir(title)
                     #savePage(title,pageContent)
 
-                    login("tangzhen","123456")
-                    postarticle(title,pageContent)
+                    #login("tangzhen","123456")
+                    #postarticle(title,pageContent)
                     #last_startid += 1
-     
+
     return last_startid
     
 def save_last_startid(last_startid):    
