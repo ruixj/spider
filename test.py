@@ -7,13 +7,18 @@ html_doc = """
 <div>
   teste
   <p> test2 </p>
+  test3
 </div>
 <p class="story">Once upon a time there were three little sisters; and their names were
 <a href="http://example.com/elsie" class="sister" id="link1">Elsie</a>,
 <a href="http://example.com/lacie" class="sister" id="link2">Lacie</a> and
 <a href="http://example.com/tillie" class="sister" id="link3">Tillie</a>;
 and they lived at the bottom of a well.</p>
-
+<div>
+   <img src="lcoahot"/>
+   <p> test4</p>
+   ssss
+   <!--sxxxx---->
 <p class="story">...</p>
 </body>
 """
@@ -27,13 +32,13 @@ def processChildren(elem,news,newsoup):
                 #    newp.append(elem)
                 #print child.name
                 tag = child.extract()
-                print tag
+                #print tag
                 #print child 
                 news.append(tag)
             elif(child.name == 'img'):
                 tag = child.extract()
-                print tag
-                #newsoup.append(tag)
+                #print tag
+                news.append(tag)
                 #print child.name
             else:       
                 processChildren(child,news,newsoup)
@@ -41,7 +46,6 @@ def processChildren(elem,news,newsoup):
         elif isinstance(child,bs4.element.NavigableString):
             nstr = newsoup.new_string(child)
             news.append(nstr)
-            pass
         else:        
            continue 
 
