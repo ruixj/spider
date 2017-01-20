@@ -13,6 +13,7 @@ from html2ubb import *
 import bs4
 from bs4 import BeautifulSoup
 from putimg2alioss import * 
+from extractor import *
 
 APPKEY   = "04a13318bc680b9e4da7bba876224a95"
 FIREFOX  = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'
@@ -185,140 +186,16 @@ def getWxImage2Local(url):
 
 def getTextAndImg(page):
     wxsoup = BeautifulSoup(page)
-    body = wxsoup.body 
-    #print body 
-    #print body.name
-    #print content.string
-    #print wxsoup.body.contents
-    #print  body.next_element.name
-    newContent = '' 
-    for element in body.next_elements:
-        #print(repr(element))
-        if isinstance(element, bs4.element.Tag):
-            if(element.name == 'p'):
-                newContent += str(element)
-                newContent += '\n'
-            elif (element.name == 'img'):
-                newContent += str(element)
-                newContent += '\n'
-
-            #return t.get_text().encode('utf-8')
-        #elif isinstance(t, bs4.element.NavigableString):
-        #    return t.string.encode('utf-8')
-    return newContent
-
-def getTextAndImg2(page):
-    wxsoup = BeautifulSoup(page)
-    lastElement = body = wxsoup.body 
-    newContent = '' 
-    #for element in body.next_elements:
-        #if isinstance(element, bs4.element.Tag):
-        #    if(element.name == 'p'):
-        #        newContent += str(element)
-        #        newContent += '\n'
-        #    elif (element.name == 'img'):
-        #        newContent += str(element)
-        #        newContent += '\n'
-
-    i = 1
-    while lastElement:
-        if isinstance(lastElement, bs4.element.Tag):
-            if(lastElement.name == 'p'):
-                print 'I am p'
-                newContent += str(lastElement)
-                newContent += '\n'
-            elif (lastElement.name == 'img'):
-                newContent += str(lastElement)
-                newContent += '\n'
-        print lastElement
-        print type(lastElement)
-        if i > 7:
-            break
-        i += 1
-        lastElement = lastElement.next_element
-
-
-    #print newContent
-    return newContent
-
-def getTextAndImg2(page):
-    wxsoup = BeautifulSoup(page)
-    lastElement = body = wxsoup.body 
-    newContent = '' 
-    for element in body.next_elements:
-        if isinstance(element,bs4.element.Tag):
-            if(element.name == 'script'):
-                continue
-
-    i = 1
-    while lastElement:
-        if isinstance(lastElement, bs4.element.Tag):
-            if(lastElement.name == 'p'):
-                print 'I am p'
-                newContent += str(lastElement)
-                newContent += '\n'
-            elif (lastElement.name == 'img'):
-                newContent += str(lastElement)
-                newContent += '\n'
-        print lastElement
-        print type(lastElement)
-        if i > 7:
-            break
-        i += 1
-        lastElement = lastElement.next_element
-
-
-    #print newContent
-    return newContent
-
-def getExecludeImg(startElem,content):
-    for element in startElem.next_siblings:
-        if isinstance(element,bs4.element.Tag):
-            if(element.name == 'script'):
-                continue
-        #content += str(element)
-        print element
-        #getExecludeImg(element.next_element,content)
-
-def getTextAndImg3(page):
-    wxsoup = BeautifulSoup(page)
-    firstElem = wxsoup.body.next_element
-    content   = ''
-    getExecludeImg(firstElem,content)
-
-def processChildren(elem,newsoup):
-    print len(elem.contents)
-    for child in elem.contents:
-        print 'child'
-        print child.name
-        if isinstance(child,bs4.element.Tag):
-            if (child.name == 'p'):
-                #append this element to new content
-                #newp = newsoup.new_tag('p')
-                #for elem in child.contents :
-                #    newp.append(elem)
-                print child.name
-                #tag = child.extract()
-                newsoup.apend(tag)
-            elif(child.name == 'img'):
-                #tag = child.extract()
-                newsoup.append(tag)
-            else:
-                processChildren(child,newsoup)
-            
-        elif isinstance(child,bs4.element.NavigableString):
-            newsoup.append(child)
-        else:
-            pass
-
-
-def getTextAndImg4(page,newsoup):
-    wxsoup = BeautifulSoup(page)
     bodyElem = wxsoup.body
-    print bodyElem.prettify()
-    print bodyElem.contents[0]
+    #print bodyElem.prettify()
+    #print bodyElem.contents[0]
     #loop through the children
-    #processChildren(bodyElem,newsoup)
+    newsoup = BeautifulSoup('')
+    btagnew = newsoup.new_tag('body')
+    newsoup.append(btagnew) 
+    processChildren(bodyElem,btagnew,newsoup)
+
+    return newsoup.prettify()
 
 def getBodyWithoutScript(page):
     wxsoup = BeautifulSoup(page)
@@ -376,17 +253,17 @@ def loop_body(last_startid):
                     #pageContent  = getWxImgInPage(pageContent,pageSeq,'data-backsrc')
 
 
-                    wxnewsoup = BeautifulSoup("")
                     #root_tag = wxsoup.new_tag('div')
-                    getTextAndImg4(pageContent,wxnewsoup)
+                    pageContent = getTextAndImg(pageContent)
+                    print pageContent
 
                     pageSeq += 1
 
                     #mkdir(title)
                     #savePage(title,pageContent)
 
-                    #login("tangzhen","123456")
-                    #postarticle(title,pageContent)
+                    login("tangzhen","123456")
+                    postarticle(title,pageContent)
                     #last_startid += 1
 
     return last_startid
