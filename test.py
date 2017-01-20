@@ -8,6 +8,7 @@ html_doc = """
   teste
   <p> test2 </p>
   test3
+  <p> test333</p>
 </div>
 <p class="story">Once upon a time there were three little sisters; and their names were
 <a href="http://example.com/elsie" class="sister" id="link1">Elsie</a>,
@@ -56,5 +57,6 @@ btagnew = newsoup.new_tag('body')
 newsoup.append(btagnew)
 btag = soup.body
 #print btag.contents
+print soup
 processChildren(btag,btagnew,newsoup)
 print newsoup
