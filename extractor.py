@@ -1,6 +1,5 @@
 '''
 Created on 2017-1-19
-
 @author: xrui
 '''
 import bs4
@@ -52,11 +51,12 @@ def processChildren2(elem,news,newsoup):
 def processChildren(elem,news,newsoup):
     for child in elem.contents:
         if isinstance(child,bs4.element.Tag):
-            style = child['sytle']
-            imgFmtReg = re.compile(r'display:none')
-            mobj= imgFmtReg.search(style)
-            if mobj:
-                continue
+            style = child.get('style')
+            if(style):
+                imgFmtReg = re.compile(r'display:none')
+                mobj= imgFmtReg.search(style)
+                if mobj:
+                    continue
 
             if (child.name == 'p'):
                 copyPTag(child,news,newsoup)
@@ -113,4 +113,3 @@ if __name__ == '__main__':
     #print btag.contents
     processChildren(btag,btagnew,newsoup)
     print newsoup
-
