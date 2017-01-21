@@ -185,14 +185,15 @@ def getWxImage2Local(url):
 
 
 def getTextAndImg(page):
-    wxsoup = BeautifulSoup(page)
+    wxsoup = BeautifulSoup(page,'html.parser')
     bodyElem = wxsoup.body
     #print bodyElem.prettify()
     #print bodyElem.contents[0]
     #loop through the children
     newsoup = BeautifulSoup('')
-    btagnew = newsoup.new_tag('body')
+    btagnew = newsoup.new_tag('div')
     newsoup.append(btagnew) 
+    #processChildren2(bodyElem,btagnew,newsoup)
     processChildren(bodyElem,btagnew,newsoup)
 
     return newsoup.prettify()
@@ -229,7 +230,7 @@ def savePage(name,content):
 
 def loop_body(last_startid):
     jsonUrlsStr= geturls(last_startid,20,1)
-    pageSeq = 1
+    pageSeq = last_startid
     if jsonUrlsStr:
        jsonUrlObj = json.loads(jsonUrlsStr)
 
@@ -247,24 +248,24 @@ def loop_body(last_startid):
                     title = record["title"]
                     pageContent  = getBodyWithoutScript(pageContent)
 
-                    #pageContent  = getImgWithSrc(pageContent,pageSeq)
+                    pageContent  = getImgWithSrc(pageContent,pageSeq)
 
-                    #pageContent  = getWxImgInPage(pageContent,pageSeq,'data-src')
-                    #pageContent  = getWxImgInPage(pageContent,pageSeq,'data-backsrc')
+                    pageContent  = getWxImgInPage(pageContent,pageSeq,'data-src')
+                    pageContent  = getWxImgInPage(pageContent,pageSeq,'data-backsrc')
 
-
+                    #print pageContent
                     #root_tag = wxsoup.new_tag('div')
                     pageContent = getTextAndImg(pageContent)
-                    print pageContent
+                    #print pageContent
 
                     pageSeq += 1
 
-                    #mkdir(title)
-                    #savePage(title,pageContent)
+                    mkdir(title)
+                    savePage(title,pageContent)
 
                     login("tangzhen","123456")
                     postarticle(title,pageContent)
-                    #last_startid += 1
+                    last_startid += 1
 
     return last_startid
     
@@ -300,11 +301,3 @@ if __name__ == '__main__':
     #     
     last_startid = loop_body(last_startid)
     save_last_startid(last_startid)
-    #save_last_startid(10)
-
-    #res = login('tangzhen','123456')
-
-    #print res
-
-    #res = postarticle('from python','from python')
-    #print res
