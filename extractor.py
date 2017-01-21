@@ -6,32 +6,29 @@ Created on 2017-1-19
 import bs4
 from bs4 import BeautifulSoup
 from bs4 import Comment
+ 
+       
+def copyPTag(elem,news,newsoup):
+    pnewTag = newsoup.new_tag('p')
+    news.append(pnewTag)
+    processChildren(elem,pnewTag,newsoup)
 
-
+   
 def copyElement(elem,news,newsoup):
     elemtxt = elem.prettify()
     soup = BeautifulSoup(elemtxt)
     roottag = soup.contents[0].extract()
     news.append(roottag)
-    
+
+def astrcmp(str1,str2):
+    return str1.lower()==str2.lower()
+
 def processChildren(elem,news,newsoup):
     for child in elem.contents:
         if isinstance(child,bs4.element.Tag):
             if (child.name == 'p'):
-                #append this element to new content                                                                                                                                                          
-                #newp = newsoup.new_tag('p')
-                #for elem in child.contents :
-                #    newp.append(elem)
-                #print child.name
-                #tag = child.extract()
-                #print tag
-                #print child 
-                copyElement(child,news,newsoup)
-            elif(child.name == 'img'):
-                #tag = child.extract()
-                #print tag
-                #news.append(tag)
-                #print child.name
+                copyPTag(child,news,newsoup)
+            elif(astrcmp(child.name, 'img') or astrcmp(child.name, 'b') or astrcmp(child.name, 'span') ):
                 copyElement(child,news,newsoup)
             else:       
                 processChildren(child,news,newsoup)
@@ -46,7 +43,6 @@ def processChildren(elem,news,newsoup):
                 news.append(nstr)
         else:        
            continue 
-
 if __name__ == '__main__':
     html_doc = """
     <html><head><title>The Dormouse's story</title></head>
@@ -54,7 +50,7 @@ if __name__ == '__main__':
     <p class="title"><b>The Dormouse's story</b></p>
     <div>
       teste
-      <p> test2 </p>
+      <p> <div>test2</div> test21 </p>
       test3
     </div>
     <p class="story">Once upon a time there were three little sisters; and their names were
@@ -78,3 +74,4 @@ if __name__ == '__main__':
     #print btag.contents
     processChildren(btag,btagnew,newsoup)
     print newsoup
+
