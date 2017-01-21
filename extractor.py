@@ -54,7 +54,7 @@ def processChildren(elem,news,newsoup):
         if isinstance(child,bs4.element.Tag):
             style = child['sytle']
             imgFmtReg = re.compile(r'display:none')
-            mobj= imgFmtReg.search(url)
+            mobj= imgFmtReg.search(style)
             if mobj:
                 continue
 
