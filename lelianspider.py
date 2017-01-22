@@ -295,17 +295,17 @@ def read_last_startid():
        if line:
           last_startid = string.atoi(line)
        else:
-          last_startid = 0
+          last_startid = 1
        f.close()
     else:
-       last_startid = 0
+       last_startid = 1
        
     return last_startid
      
 if __name__ == '__main__':
     last_startid = read_last_startid()
     print last_startid
-    last_startid +=1
+    #last_startid +=1
     while True:
         last_startid = loop_body(last_startid)
         save_last_startid(last_startid)
