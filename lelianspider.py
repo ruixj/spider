@@ -212,11 +212,11 @@ def mkdir(path):
     path = path.strip()
     isExists = os.path.exists(path)
     if not isExists:
-        print u"creating folder",path
+        #print u"creating folder",path
         os.makedirs(path)
         return True 
     else:
-        print "folder ",path," already exists"
+        #print "folder ",path," already exists"
         return False
 
 
@@ -243,7 +243,7 @@ def loop_body(last_startid):
                 #last_startid += record_count
                 recordlist = jsonUrlObj["data"]["data_record_list"]
                 for record in recordlist:
-                    #print record["link_url"],'\n'
+                    print 'processing ',record["link_url"],'\n'
                     pageContent = getPageContent(record["link_url"])
                     title = record["title"]
                     pageContent  = getBodyWithoutScript(pageContent)
@@ -260,8 +260,8 @@ def loop_body(last_startid):
 
                     pageSeq += 1
 
-                    mkdir(title)
-                    savePage(title,pageContent)
+                    #mkdir(title)
+                    #savePage(title,pageContent)
 
                     login("tangzhen","123456")
                     postarticle(title,pageContent)
@@ -292,12 +292,16 @@ def read_last_startid():
     return last_startid
      
 if __name__ == '__main__':
-    print u"你好世界" 
     last_startid = read_last_startid()
     print last_startid
-    #while True:
-    #    print u"Sleeping"
-    #    time.sleep(3*60)
-    #     
-    last_startid = loop_body(last_startid)
-    save_last_startid(last_startid)
+
+    while True:
+        last_startid = loop_body(last_startid)
+        save_last_startid(last_startid)
+
+        print u"Sleeping"
+
+        time.sleep(3*60)
+         
+        print last_startid
+

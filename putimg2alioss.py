@@ -31,7 +31,7 @@ def listImgInOss():
         print b.size
         
 def getImgExt(url):
-    print url 
+    #print url 
     imgFmtReg = re.compile(r'wx_fmt=(.+)')
     #mobj= imgFmtReg.findall(url)
     mobj= imgFmtReg.search(url)
