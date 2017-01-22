@@ -53,7 +53,7 @@ def postarticle(title,content):
     cookie = cookielib.MozillaCookieJar()
     cookie.load('cookie.txt', ignore_discard=True, ignore_expires=True)
 
-    print title
+    #print title
     #title   = urllib.quote(title)
     title    = title.encode('utf-8')
     print title
