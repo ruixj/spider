@@ -71,7 +71,7 @@ def postarticle(title,content):
     
     signkey = getsign(APPKEY,'publish')
     publishUrl = 'http://wc.lelianyanglao.com/api/publish/publish_article/?mobile_sign='+signkey
-    print publishUrl
+    #print publishUrl
     
     req = urllib2.Request(publishUrl,data)
     req.add_header('User-agent',FIREFOX)
@@ -135,6 +135,10 @@ def getImgWithSrc(page,pageSeq):
         resurl = storeImg2AliOss(imgurl,imgName)
         #print resurl
         img['src'] = resurl
+		opacity= img.get('opacity')
+		if(opacity):
+			img['opacity'] = 1
+
         imgSeq += 1
 
     return wxpsoup.prettify()
@@ -160,6 +164,10 @@ def getWxImgInPage(page,pageSeq,attr):
         resurl = storeImg2AliOss(imgurl,imgName)
         #print resurl
         img['src'] = resurl
+		opacity= img.get('opacity')
+		if(opacity):
+			img['opacity'] = 1
+
         imgSeq +=1
 
     return wxpsoup.prettify()
@@ -265,7 +273,10 @@ def loop_body(last_startid):
 
                     login("tangzhen","123456")
                     postarticle(title,pageContent)
+                    save_last_startid(last_startid)
+
                     last_startid += 1
+					
 
     return last_startid
     
@@ -294,7 +305,7 @@ def read_last_startid():
 if __name__ == '__main__':
     last_startid = read_last_startid()
     print last_startid
-
+    last_startid +=1
     while True:
         last_startid = loop_body(last_startid)
         save_last_startid(last_startid)
