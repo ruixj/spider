@@ -135,6 +135,10 @@ def getImgWithSrc(page,pageSeq):
         resurl = storeImg2AliOss(imgurl,imgName)
         #print resurl
         img['src'] = resurl
+		opacity= img.get('opacity')
+		if(opacity):
+			img['opacity'] = 1
+
         imgSeq += 1
 
     return wxpsoup.prettify()
@@ -160,6 +164,10 @@ def getWxImgInPage(page,pageSeq,attr):
         resurl = storeImg2AliOss(imgurl,imgName)
         #print resurl
         img['src'] = resurl
+		opacity= img.get('opacity')
+		if(opacity):
+			img['opacity'] = 1
+
         imgSeq +=1
 
     return wxpsoup.prettify()
@@ -265,8 +273,7 @@ def loop_body(last_startid):
 
                     login("tangzhen","123456")
                     postarticle(title,pageContent)
-
-					save_last_startid(last_startid)
+                    save_last_startid(last_startid)
 
                     last_startid += 1
 					
