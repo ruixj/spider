@@ -53,7 +53,7 @@ def postarticle(title,content):
     cookie = cookielib.MozillaCookieJar()
     cookie.load('cookie.txt', ignore_discard=True, ignore_expires=True)
 
-    print title
+    #print title
     #title   = urllib.quote(title)
     title    = title.encode('utf-8')
     print title
@@ -71,7 +71,7 @@ def postarticle(title,content):
     
     signkey = getsign(APPKEY,'publish')
     publishUrl = 'http://wc.lelianyanglao.com/api/publish/publish_article/?mobile_sign='+signkey
-    print publishUrl
+    #print publishUrl
     
     req = urllib2.Request(publishUrl,data)
     req.add_header('User-agent',FIREFOX)
@@ -265,7 +265,11 @@ def loop_body(last_startid):
 
                     login("tangzhen","123456")
                     postarticle(title,pageContent)
+
+					save_last_startid(last_startid)
+
                     last_startid += 1
+					
 
     return last_startid
     
@@ -294,7 +298,7 @@ def read_last_startid():
 if __name__ == '__main__':
     last_startid = read_last_startid()
     print last_startid
-
+    last_startid +=1
     while True:
         last_startid = loop_body(last_startid)
         save_last_startid(last_startid)
