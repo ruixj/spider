@@ -261,22 +261,23 @@ def loop_body(last_startid):
                     print '\nprocessing ',title,'\n','page url:',record["link_url"]
 
                     pageContent = getPageContent(record["link_url"])
-                    pageContent  = getBodyWithoutScript(pageContent)
+                    if pageContent:
+                        pageContent  = getBodyWithoutScript(pageContent)
                     
-                    pageBaseUri  = getPageUrlBaseUri(record["link_url"])
-                    print "page baseUri:", pageBaseUri
-                    if pageBaseUri:
-                        pageContent  = getImgWithSrc(pageContent,pageSeq,pageBaseUri)
-                        pageContent  = getWxImgInPage(pageContent,pageSeq,'data-src')
-                        pageContent  = getWxImgInPage(pageContent,pageSeq,'data-backsrc')
+                        pageBaseUri  = getPageUrlBaseUri(record["link_url"])
+                        print "page baseUri:", pageBaseUri
+                        if pageBaseUri:
+                            pageContent  = getImgWithSrc(pageContent,pageSeq,pageBaseUri)
+                            pageContent  = getWxImgInPage(pageContent,pageSeq,'data-src')
+                            pageContent  = getWxImgInPage(pageContent,pageSeq,'data-backsrc')
 
-                        pageContent = getTextAndImg(pageContent)
+                            pageContent = getTextAndImg(pageContent)
 
-                        mkdir(title)
-                        savePage(title,pageContent)
+                            mkdir(title)
+                            savePage(title,pageContent)
 
-                        #login("tangzhen","123456")
-                        #postarticle(title,pageContent)
+                            #login("tangzhen","123456")
+                            #postarticle(title,pageContent)
 
                     save_last_startid(last_startid)
                     pageSeq += 1
