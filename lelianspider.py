@@ -132,7 +132,7 @@ def getImgWithSrc(page,pageSeq,pageBaseUri):
         #check if only with img name
         #append page url
         if(not checkUrlWithHttp(imgurl)):
-            imgurl = pageBaseUri + imgurl
+            imgurl = pageBaseUri + '/' + imgurl
 
         imgExt = 'jpg'  
         imgName = getImgName(pageSeq,'src',imgSeq,imgExt)

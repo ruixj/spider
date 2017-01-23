@@ -22,7 +22,7 @@ def storeImg2AliOss(url,remotename):
             bucket.put_object(remotename,imgres.content)
             resurl = bindroot 
             resurl += remotename
-    except Exception:
+    except:
        print 'invalid URL ', url 
     return resurl
 
