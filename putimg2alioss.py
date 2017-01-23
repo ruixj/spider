@@ -5,7 +5,6 @@ import requests
 from itertools import islice
 import re
 import time
-import sleep
 
 accessKeyId     = "LTAIno40jE5rgKYu";
 accessKeySecret = "PR7oD85FzxzeqZjuM3LTG3iopgLqKj";
