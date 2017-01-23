@@ -137,9 +137,10 @@ def getImgWithSrc(page,pageSeq,pageBaseUri):
         imgExt = 'jpg'  
         imgName = getImgName(pageSeq,'src',imgSeq,imgExt)
 
-        #print imgurl
+        print imgurl
         resurl = storeImg2AliOss(imgurl,imgName)
-        #print resurl
+        print resurl
+
         img['src'] = resurl
         opacity= img.get('opacity')
         if(opacity):
@@ -256,9 +257,10 @@ def loop_body(last_startid):
                 #last_startid += record_count
                 recordlist = jsonUrlObj["data"]["data_record_list"]
                 for record in recordlist:
-                    print 'processing ',record["link_url"],'\n'
-                    pageContent = getPageContent(record["link_url"])
                     title = record["title"]
+                    print '\nprocessing ',title,'\n',record["link_url"]
+
+                    pageContent = getPageContent(record["link_url"])
                     pageContent  = getBodyWithoutScript(pageContent)
                     
                     pageBaseUri  = getPageUrlBaseUri(record["link_url"])
