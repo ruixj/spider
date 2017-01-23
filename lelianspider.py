@@ -143,7 +143,8 @@ def getImgWithSrc(page,pageSeq,pageBaseUri):
         img['src'] = resurl
         style = img.get('style')
         if(style):
-            strUtil.removeAttrInCss(style,'opacity')
+            style = strUtil.removeAttrInCss(style,'opacity')
+            img['style'] = style
         imgSeq += 1
 
     return wxpsoup.prettify()
@@ -177,7 +178,8 @@ def getWxImgInPage(page,pageSeq,attr):
 
         style = img.get('style')
         if(style):
-            strUtil.removeAttrInCss(style,'opacity')
+            style = strUtil.removeAttrInCss(style,'opacity')
+            img['style'] = style
 
         imgSeq +=1
 
