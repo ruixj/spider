@@ -16,7 +16,7 @@ bindroot   = "http://pic-app.lelianyanglao.com/"
 def storeImg2AliOss(url,remotename):
     resurl = ''
     try:
-        sleep(0.01)
+        #sleep(0.01)
         imgres = requests.get(url)
         if(imgres.status_code == requests.codes.ok):
             auth = oss2.Auth(accessKeyId,accessKeySecret)
