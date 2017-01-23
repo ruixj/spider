@@ -141,10 +141,9 @@ def getImgWithSrc(page,pageSeq,pageBaseUri):
         print 'lelian pic url:', resurl
 
         img['src'] = resurl
-        opacity= img.get('opacity')
-        if(opacity):
-            img['opacity'] = 1
-
+        style = img.get('style')
+        if(style):
+            strUtil.removeAttrInCss(style,'opacity')
         imgSeq += 1
 
     return wxpsoup.prettify()
@@ -175,9 +174,10 @@ def getWxImgInPage(page,pageSeq,attr):
         print 'lelianpic url:',resurl
 
         img['src'] = resurl
-	opacity= img.get('opacity')
-        if(opacity):
-            img['opacity'] = 1
+
+        style = img.get('style')
+        if(style):
+            strUtil.removeAttrInCss(style,'opacity')
 
         imgSeq +=1
 
