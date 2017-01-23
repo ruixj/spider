@@ -14,6 +14,7 @@ import bs4
 from bs4 import BeautifulSoup
 from putimg2alioss import * 
 from extractor import *
+from strutil import *
 
 APPKEY   = "04a13318bc680b9e4da7bba876224a95"
 FIREFOX  = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'
@@ -111,7 +112,7 @@ def getPageContent(url):
             print u"Fail to get page from ",url
             return None
 
-def getImgWithSrc(page,pageSeq):
+def getImgWithSrc(page,pageSeq,pageBaseUri):
     if not page:
         print u"invalid page"
 
@@ -122,22 +123,27 @@ def getImgWithSrc(page,pageSeq):
     imgSeq = 1
     for img in datasrcImgList:
         imgurl = img['src']
-        imgExt = 'jpg'  #getImgExt(imgurl)
-        imgName = getImgName(pageSeq,'src',imgSeq,imgExt)
+        imgurl = strUtil.removeSpace(imgurl)
+
         if imgurl == '':
             imgSeq += 1
             continue
 
+        #check if only with img name
+        #append page url
         if(not checkUrlWithHttp(imgurl)):
-            imgurl = "http:" + imgurl
+            imgurl = pageBaseUri + imgurl
+
+        imgExt = 'jpg'  
+        imgName = getImgName(pageSeq,'src',imgSeq,imgExt)
 
         #print imgurl
         resurl = storeImg2AliOss(imgurl,imgName)
         #print resurl
         img['src'] = resurl
-		opacity= img.get('opacity')
-		if(opacity):
-			img['opacity'] = 1
+        opacity= img.get('opacity')
+        if(opacity):
+            img['opacity'] = 1
 
         imgSeq += 1
 
@@ -149,34 +155,33 @@ def getWxImgInPage(page,pageSeq,attr):
         print u"invalid page"
 
     wxpsoup = BeautifulSoup(page)
-    #getTextAndImg(wxpsoup)
     #1. find img 
     datasrcImgList = wxpsoup.find_all("img",attrs={attr: True})
     imgSeq = 1
     for img in datasrcImgList:
         imgurl = img[attr]
+        imgurl = strUtil.removeSpace(imgurl)
+
         imgExt = getImgExt(imgurl)
         imgName = getImgName(pageSeq,attr,imgSeq,imgExt)
         #print 'before checking img url', imgurl
         if(not checkUrlWithHttp(imgurl)):
-            imgurl = "http:" + imgurl
-
+            if imgurl:
+                imgurl = "http:" + imgurl
+            else:
+                continue
+        print 'imgurl:',imgurl
         resurl = storeImg2AliOss(imgurl,imgName)
-        #print resurl
+        print 'lelianpic url:',resurl
         img['src'] = resurl
-		opacity= img.get('opacity')
-		if(opacity):
-			img['opacity'] = 1
+	opacity= img.get('opacity')
+        if(opacity):
+            img['opacity'] = 1
 
         imgSeq +=1
 
     return wxpsoup.prettify()
 
-
-    #     
-    #2. store it into cloud and get the url of the img
-    #3. replace the img src in the page with the url
-    #4. return new page
     
 def getWxImage2Local(url):
     headersL = {'User-Agent':FIREFOX}
@@ -255,26 +260,24 @@ def loop_body(last_startid):
                     pageContent = getPageContent(record["link_url"])
                     title = record["title"]
                     pageContent  = getBodyWithoutScript(pageContent)
+                    
+                    pageBaseUri  = getPageUrlBaseUri(record["link_url"])
+                    print "page baseUri:", pageBaseUri
+                    if pageBaseUri:
+                        pageContent  = getImgWithSrc(pageContent,pageSeq,pageBaseUri)
+                        pageContent  = getWxImgInPage(pageContent,pageSeq,'data-src')
+                        pageContent  = getWxImgInPage(pageContent,pageSeq,'data-backsrc')
 
-                    pageContent  = getImgWithSrc(pageContent,pageSeq)
+                        pageContent = getTextAndImg(pageContent)
 
-                    pageContent  = getWxImgInPage(pageContent,pageSeq,'data-src')
-                    pageContent  = getWxImgInPage(pageContent,pageSeq,'data-backsrc')
+                        mkdir(title)
+                        savePage(title,pageContent)
 
-                    #print pageContent
-                    #root_tag = wxsoup.new_tag('div')
-                    pageContent = getTextAndImg(pageContent)
-                    #print pageContent
+                        #login("tangzhen","123456")
+                        #postarticle(title,pageContent)
 
-                    pageSeq += 1
-
-                    #mkdir(title)
-                    #savePage(title,pageContent)
-
-                    login("tangzhen","123456")
-                    postarticle(title,pageContent)
                     save_last_startid(last_startid)
-
+                    pageSeq += 1
                     last_startid += 1
 					
 
@@ -295,17 +298,17 @@ def read_last_startid():
        if line:
           last_startid = string.atoi(line)
        else:
-          last_startid = 0
+          last_startid = 1
        f.close()
     else:
-       last_startid = 0
+       last_startid = 1
        
     return last_startid
      
 if __name__ == '__main__':
     last_startid = read_last_startid()
     print last_startid
-    last_startid +=1
+    #last_startid +=1
     while True:
         last_startid = loop_body(last_startid)
         save_last_startid(last_startid)
