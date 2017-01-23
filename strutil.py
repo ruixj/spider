@@ -9,9 +9,9 @@ class strUtil:
         idx = style.find(attr)
         if(idx >=0):
             style1 = style[:idx]
-            print 'left:',style1
+            #print 'left:',style1
             style2 = style[idx:]
-            print 'right:',style2
+            #print 'right:',style2
             idx2  = style2.find(';')
             if(idx2 >=0):
                 style2 = style2[idx2+1:]
