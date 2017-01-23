@@ -5,6 +5,7 @@ import requests
 from itertools import islice
 import re
 import time
+import sleep
 
 accessKeyId     = "LTAIno40jE5rgKYu";
 accessKeySecret = "PR7oD85FzxzeqZjuM3LTG3iopgLqKj";
@@ -12,9 +13,11 @@ accessKeySecret = "PR7oD85FzxzeqZjuM3LTG3iopgLqKj";
 endpoint = "http://oss-cn-beijing.aliyuncs.com";
 bucketname = "lelia-app";
 bindroot   = "http://pic-app.lelianyanglao.com/"
+
 def storeImg2AliOss(url,remotename):
     resurl = ''
     try:
+        sleep(0.01)
         imgres = requests.get(url)
         if(imgres.status_code == requests.codes.ok):
             auth = oss2.Auth(accessKeyId,accessKeySecret)

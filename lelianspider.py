@@ -54,10 +54,8 @@ def postarticle(title,content):
     cookie = cookielib.MozillaCookieJar()
     cookie.load('cookie.txt', ignore_discard=True, ignore_expires=True)
 
-    #print title
     #title   = urllib.quote(title)
     title    = title.encode('utf-8')
-    print title
  
     #content = Html2UBB(content)
     #content = urllib.quote(content)
@@ -72,7 +70,6 @@ def postarticle(title,content):
     
     signkey = getsign(APPKEY,'publish')
     publishUrl = 'http://wc.lelianyanglao.com/api/publish/publish_article/?mobile_sign='+signkey
-    #print publishUrl
     
     req = urllib2.Request(publishUrl,data)
     req.add_header('User-agent',FIREFOX)
@@ -100,7 +97,6 @@ def geturls(start_id,page_size,page_num):
             return None
 
 def getPageContent(url):
-    print url 
     headersL = {'User-Agent':FIREFOX}
     try:    
         req = urllib2.Request(url,headers=headersL)
@@ -132,14 +128,17 @@ def getImgWithSrc(page,pageSeq,pageBaseUri):
         #check if only with img name
         #append page url
         if(not checkUrlWithHttp(imgurl)):
-            imgurl = pageBaseUri + '/' + imgurl
+            if( imgurl.startswith('//')):
+                imgurl = 'http:' + imgurl
+            else:
+                imgurl = pageBaseUri + '/' + imgurl
 
         imgExt = 'jpg'  
         imgName = getImgName(pageSeq,'src',imgSeq,imgExt)
 
-        print imgurl
+        print 'img src url:', imgurl
         resurl = storeImg2AliOss(imgurl,imgName)
-        print resurl
+        print 'lelian pic url:', resurl
 
         img['src'] = resurl
         opacity= img.get('opacity')
@@ -165,7 +164,7 @@ def getWxImgInPage(page,pageSeq,attr):
 
         imgExt = getImgExt(imgurl)
         imgName = getImgName(pageSeq,attr,imgSeq,imgExt)
-        #print 'before checking img url', imgurl
+
         if(not checkUrlWithHttp(imgurl)):
             if imgurl:
                 imgurl = "http:" + imgurl
@@ -174,6 +173,7 @@ def getWxImgInPage(page,pageSeq,attr):
         print 'imgurl:',imgurl
         resurl = storeImg2AliOss(imgurl,imgName)
         print 'lelianpic url:',resurl
+
         img['src'] = resurl
 	opacity= img.get('opacity')
         if(opacity):
@@ -258,7 +258,7 @@ def loop_body(last_startid):
                 recordlist = jsonUrlObj["data"]["data_record_list"]
                 for record in recordlist:
                     title = record["title"]
-                    print '\nprocessing ',title,'\n',record["link_url"]
+                    print '\nprocessing ',title,'\n','page url:',record["link_url"]
 
                     pageContent = getPageContent(record["link_url"])
                     pageContent  = getBodyWithoutScript(pageContent)
