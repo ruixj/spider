@@ -260,6 +260,7 @@ def loop_body(last_startid):
                 recordlist = jsonUrlObj["data"]["data_record_list"]
                 for record in recordlist:
                     title = record["title"]
+                    title = title.encode('utf-8')
                     print '\nprocessing ',title,'\n','page url:',record["link_url"]
 
                     pageContent = getPageContent(record["link_url"])
