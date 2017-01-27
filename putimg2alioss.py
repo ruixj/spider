@@ -4,8 +4,8 @@ import oss2
 import requests
 from itertools import islice
 import re
-import time
-
+from commonlog import LelianLogger
+import logging
 accessKeyId     = "LTAIno40jE5rgKYu";
 accessKeySecret = "PR7oD85FzxzeqZjuM3LTG3iopgLqKj";
 
@@ -18,14 +18,15 @@ def storeImg2AliOss(url,remotename):
     try:
         #sleep(0.01)
         imgres = requests.get(url)
-        if(imgres.status_code == requests.codes.ok):
+        if(imgres.status_code == 200):
             auth = oss2.Auth(accessKeyId,accessKeySecret)
             bucket = oss2.Bucket(auth,endpoint,bucketname)
             bucket.put_object(remotename,imgres.content)
             resurl = bindroot 
             resurl += remotename
     except:
-       print 'invalid URL ', url 
+        #print 'invalid URL ', url 
+        LelianLogger.log(logging.ERROR,'invalid url: %s',url)
     return resurl
 
 def listImgInOss():
@@ -50,9 +51,9 @@ def getImgExt(url):
 
 def checkUrlWithHttp(url):
     if re.match(r'^https?:/{2}\w.+$', url):  
-       return True 
+        return True 
     else:  
-       return False 
+        return False 
 
 def getPageUrlBaseUri(pageUrl):
     urlpattern = re.compile(r'(https?://)([-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|])')
@@ -72,7 +73,7 @@ def getPageUrlBaseUri(pageUrl):
         baseUri  += pathlist
         return baseUri
     else:
-        none
+        return None
 
 def getImgName(pageseq,imgtype,imgseq,imgext):
     #datestr = time.strftime('%Y%m%d',time.localtime(time.time()))

@@ -4,8 +4,7 @@ import urllib2
 import cookielib
 import json
 import string
-import re
-import time
+ 
 import os
 #import md5
 import hashlib
@@ -15,6 +14,7 @@ from bs4 import BeautifulSoup
 from putimg2alioss import * 
 from extractor import *
 from strutil import *
+from commonlog import  *
 
 APPKEY   = "04a13318bc680b9e4da7bba876224a95"
 FIREFOX  = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'
@@ -37,7 +37,7 @@ def login(loginName,loginPwd):
 
     signkey = getsign(APPKEY,'account')
     loginUrl = 'http://wc.lelianyanglao.com/api/account/login_process/?mobile_sign='+signkey
-    print loginUrl
+    #print loginUrl
     
     #send the request to the url
     req = urllib2.Request(loginUrl,postdata)
@@ -93,7 +93,8 @@ def geturls(start_id,page_size,page_num):
         return urls 
     except urllib2.URLError,e:
         if hasattr(e,"reason"):
-            print u"unable to get the urls"
+            #print u"unable to get the urls"
+            LelianLogger.log(logging.ERROR,u"\nunable to get the urls")
             return None
 
 def getPageContent(url):
@@ -105,12 +106,14 @@ def getPageContent(url):
         return page 
     except urllib2.URLError,e:
         if hasattr(e,"reason"):
-            print u"Fail to get page from ",url
+            #print u"Fail to get page from ",url
+            LelianLogger.log(logging.ERROR,u"\nFail to get page from %s",url)
             return None
 
 def getImgWithSrc(page,pageSeq,pageBaseUri):
     if not page:
-        print u"invalid page"
+        #print u"invalid page"
+        LelianLogger.log(logging.ERROR,u"\ninvalid page")
 
     wxpsoup = BeautifulSoup(page)
     #getTextAndImg(wxpsoup)
@@ -136,9 +139,11 @@ def getImgWithSrc(page,pageSeq,pageBaseUri):
         imgExt = 'jpg'  
         imgName = getImgName(pageSeq,'src',imgSeq,imgExt)
 
-        print 'img src url:', imgurl
+        #print 'img src url:', imgurl
+        LelianLogger.log(logging.INFO,u"\nimg src url: %s",imgurl)
         resurl = storeImg2AliOss(imgurl,imgName)
-        print 'lelian pic url:', resurl
+        LelianLogger.log(logging.INFO,u"\nlelian pic url: %s",resurl)
+        #print 'lelian pic url:', resurl
 
         img['src'] = resurl
         style = img.get('style')
@@ -152,7 +157,8 @@ def getImgWithSrc(page,pageSeq,pageBaseUri):
 
 def getWxImgInPage(page,pageSeq,attr):
     if not page:
-        print u"invalid page"
+        #print u"invalid page"
+        LelianLogger.log(logging.ERROR,u"\ninvalid page")
 
     wxpsoup = BeautifulSoup(page)
     #1. find img 
@@ -170,9 +176,12 @@ def getWxImgInPage(page,pageSeq,attr):
                 imgurl = "http:" + imgurl
             else:
                 continue
-        print 'imgurl:',imgurl
+            
+        #print 'imgurl:',imgurl
+        LelianLogger.log(logging.ERROR,u"\nimgurl:%s",imgurl)
         resurl = storeImg2AliOss(imgurl,imgName)
-        print 'lelianpic url:',resurl
+        LelianLogger.log(logging.ERROR,u"\nlelianpic url:%s",resurl)
+        #print 'lelianpic url:',resurl
 
         img['src'] = resurl
 
@@ -216,7 +225,7 @@ def getTextAndImg(page):
 
 def getBodyWithoutScript(page):
     wxsoup = BeautifulSoup(page)
-    content = ''
+
     scripts= wxsoup.find_all("script")
     for script in scripts:
         script.decompose()
@@ -239,7 +248,8 @@ def mkdir(path):
 def savePage(name,content):
     fileName = name + "/" + name + ".html"
     f = open(fileName,"w+")
-    print u"Saving page", name
+    #print u"Saving page", name
+    LelianLogger.log(logging.INFO,u"\nSaving page: %s",name)
     content = content.encode('utf-8')
     f.write(content)
 
@@ -248,9 +258,9 @@ def loop_body(last_startid):
     jsonUrlsStr= geturls(last_startid,20,1)
     pageSeq = last_startid
     if jsonUrlsStr:
-       jsonUrlObj = json.loads(jsonUrlsStr)
+        jsonUrlObj = json.loads(jsonUrlsStr)
 
-       if (jsonUrlObj["result"]["code"] == "OK"):
+        if (jsonUrlObj["result"]["code"] == "OK"):
             reccount     = jsonUrlObj["data"]["data_recode_count"]
             #rec_count    = int(reccount)
             record_count = string.atoi(reccount);
@@ -261,14 +271,16 @@ def loop_body(last_startid):
                 for record in recordlist:
                     title = record["title"]
                     title = title.encode('utf-8')
-                    print '\nprocessing ',title,'\n','page url:',record["link_url"]
+                    LelianLogger.log(logging.INFO,u"\nprocessing : %s，page url: %s",title,record["link_url"])
+                    #print '\nprocessing ',title,'\n','page url:',record["link_url"]
 
                     pageContent = getPageContent(record["link_url"])
                     if pageContent:
                         pageContent  = getBodyWithoutScript(pageContent)
                     
                         pageBaseUri  = getPageUrlBaseUri(record["link_url"])
-                        print "page baseUri:", pageBaseUri
+                        #print "page baseUri:", pageBaseUri
+                        LelianLogger.log(logging.INFO,u"\npage baseUri: %s",pageBaseUri)
                         if pageBaseUri:
                             pageContent  = getImgWithSrc(pageContent,pageSeq,pageBaseUri)
                             pageContent  = getWxImgInPage(pageContent,pageSeq,'data-src')
@@ -285,33 +297,35 @@ def loop_body(last_startid):
                     save_last_startid(last_startid)
                     pageSeq += 1
                     last_startid += 1
-					
 
     return last_startid
     
 def save_last_startid(last_startid):    
     fileName = 'laststartid.txt'
     f = open(fileName,"w+")
-    print u"Saving page", last_startid
+    
+    LelianLogger.log(logging.INFO,u"Saving page : %s",last_startid)
+    #print u"Saving page", last_startid
     strlast_startid = str(last_startid)
     f.write(strlast_startid)
 
 def read_last_startid():    
     fileName = 'laststartid.txt'
     if( os.path.exists(fileName) ):
-       f = open(fileName)
-       line = f.readline()  
-       if line:
-          last_startid = string.atoi(line)
-       else:
-          last_startid = 1
-       f.close()
+        f = open(fileName)
+        line = f.readline()  
+        if line:
+            last_startid = string.atoi(line)
+        else:
+            last_startid = 1
+        f.close()
     else:
-       last_startid = 1
+        last_startid = 1
        
     return last_startid
      
 if __name__ == '__main__':
+    LelianLogger.configLog(logging.config)
     last_startid = read_last_startid()
     print last_startid
     #last_startid +=1
@@ -319,7 +333,7 @@ if __name__ == '__main__':
         last_startid = loop_body(last_startid)
         save_last_startid(last_startid)
 
-        print u"Sleeping"
+        LelianLogger.log(logging.INFO,u"Sleeping")
 
         time.sleep(3*60)
          
