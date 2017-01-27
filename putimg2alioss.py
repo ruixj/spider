@@ -4,8 +4,8 @@ import oss2
 import requests
 from itertools import islice
 import re
-from commonlog import LelianLogger
-import logging
+from commonlog import  *
+ 
 accessKeyId     = "LTAIno40jE5rgKYu";
 accessKeySecret = "PR7oD85FzxzeqZjuM3LTG3iopgLqKj";
 
@@ -26,7 +26,7 @@ def storeImg2AliOss(url,remotename):
             resurl += remotename
     except:
         #print 'invalid URL ', url 
-        LelianLogger.log(logging.ERROR,'invalid url: %s',url)
+        LelianLogger.log('main',logging.ERROR,'invalid url: %s',url)
     return resurl
 
 def listImgInOss():

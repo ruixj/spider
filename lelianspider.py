@@ -15,6 +15,7 @@ from putimg2alioss import *
 from extractor import *
 from strutil import *
 from commonlog import  *
+import time
 
 APPKEY   = "04a13318bc680b9e4da7bba876224a95"
 FIREFOX  = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'
@@ -113,7 +114,7 @@ def getPageContent(url):
 def getImgWithSrc(page,pageSeq,pageBaseUri):
     if not page:
         #print u"invalid page"
-        LelianLogger.log(logging.ERROR,u"\ninvalid page")
+        LelianLogger.log('main',logging.ERROR,u"\ninvalid page")
 
     wxpsoup = BeautifulSoup(page)
     #getTextAndImg(wxpsoup)
@@ -140,9 +141,9 @@ def getImgWithSrc(page,pageSeq,pageBaseUri):
         imgName = getImgName(pageSeq,'src',imgSeq,imgExt)
 
         #print 'img src url:', imgurl
-        LelianLogger.log(logging.INFO,u"\nimg src url: %s",imgurl)
+        LelianLogger.log('main',logging.INFO,u"\nimg src url: %s",imgurl)
         resurl = storeImg2AliOss(imgurl,imgName)
-        LelianLogger.log(logging.INFO,u"\nlelian pic url: %s",resurl)
+        LelianLogger.log('main',logging.INFO,u"\nlelian pic url: %s",resurl)
         #print 'lelian pic url:', resurl
 
         img['src'] = resurl
@@ -158,7 +159,7 @@ def getImgWithSrc(page,pageSeq,pageBaseUri):
 def getWxImgInPage(page,pageSeq,attr):
     if not page:
         #print u"invalid page"
-        LelianLogger.log(logging.ERROR,u"\ninvalid page")
+        LelianLogger.log('main',logging.ERROR,u"\ninvalid page")
 
     wxpsoup = BeautifulSoup(page)
     #1. find img 
@@ -178,9 +179,9 @@ def getWxImgInPage(page,pageSeq,attr):
                 continue
             
         #print 'imgurl:',imgurl
-        LelianLogger.log(logging.ERROR,u"\nimgurl:%s",imgurl)
+        LelianLogger.log('main',logging.INFO,u"\nimgurl:%s",imgurl)
         resurl = storeImg2AliOss(imgurl,imgName)
-        LelianLogger.log(logging.ERROR,u"\nlelianpic url:%s",resurl)
+        LelianLogger.log('main',logging.INFO,u"\nlelianpic url:%s",resurl)
         #print 'lelianpic url:',resurl
 
         img['src'] = resurl
@@ -249,7 +250,7 @@ def savePage(name,content):
     fileName = name + "/" + name + ".html"
     f = open(fileName,"w+")
     #print u"Saving page", name
-    LelianLogger.log(logging.INFO,u"\nSaving page: %s",name)
+    LelianLogger.log('main',logging.INFO,u"\nSaving page: %s",name)
     content = content.encode('utf-8')
     f.write(content)
 
@@ -271,7 +272,7 @@ def loop_body(last_startid):
                 for record in recordlist:
                     title = record["title"]
                     title = title.encode('utf-8')
-                    LelianLogger.log(logging.INFO,u"\nprocessing : %s，page url: %s",title,record["link_url"])
+                    LelianLogger.log('main',logging.INFO,u"\nprocessing : %s，page url: %s",title,record["link_url"])
                     #print '\nprocessing ',title,'\n','page url:',record["link_url"]
 
                     pageContent = getPageContent(record["link_url"])
@@ -280,7 +281,7 @@ def loop_body(last_startid):
                     
                         pageBaseUri  = getPageUrlBaseUri(record["link_url"])
                         #print "page baseUri:", pageBaseUri
-                        LelianLogger.log(logging.INFO,u"\npage baseUri: %s",pageBaseUri)
+                        LelianLogger.log('main',logging.INFO,u"\npage baseUri: %s",pageBaseUri)
                         if pageBaseUri:
                             pageContent  = getImgWithSrc(pageContent,pageSeq,pageBaseUri)
                             pageContent  = getWxImgInPage(pageContent,pageSeq,'data-src')
@@ -304,7 +305,7 @@ def save_last_startid(last_startid):
     fileName = 'laststartid.txt'
     f = open(fileName,"w+")
     
-    LelianLogger.log(logging.INFO,u"Saving page : %s",last_startid)
+    LelianLogger.log('main',logging.INFO,u"Saving page : %s",last_startid)
     #print u"Saving page", last_startid
     strlast_startid = str(last_startid)
     f.write(strlast_startid)
@@ -325,7 +326,7 @@ def read_last_startid():
     return last_startid
      
 if __name__ == '__main__':
-    LelianLogger.configLog(logging.config)
+    LelianLogger.configLog('logging.conf')
     last_startid = read_last_startid()
     print last_startid
     #last_startid +=1
@@ -333,7 +334,7 @@ if __name__ == '__main__':
         last_startid = loop_body(last_startid)
         save_last_startid(last_startid)
 
-        LelianLogger.log(logging.INFO,u"Sleeping")
+        LelianLogger.log('main',logging.INFO,u"Sleeping")
 
         time.sleep(3*60)
          

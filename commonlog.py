@@ -37,9 +37,9 @@ class LelianLogger:
         logger.warning(msg,*args,**kwargs)  
           
     @staticmethod 
-    def log(modulename='main',lvl,msg,*args,**kwargs):
+    def log(modulename,lvl,msg,*args,**kwargs):
         logger = logging.getLogger(modulename)
-        logger.log(msg,*args,**kwargs)    
+        logger.log(lvl,msg,*args,**kwargs)    
   
     @staticmethod 
     def exception(modulename,msg,*args,**kwargs):
