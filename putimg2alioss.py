@@ -26,7 +26,7 @@ def storeImg2AliOss(url,remotename):
             resurl += remotename
     except:
         #print 'invalid URL ', url 
-        LelianLogger.log('main',logging.ERROR,'invalid url: %s',url)
+        LelianLogger.log('main.extractor',logging.ERROR,u'invalid url: %s',url)
     return resurl
 
 def listImgInOss():

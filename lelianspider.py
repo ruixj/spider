@@ -95,7 +95,7 @@ def geturls(start_id,page_size,page_num):
     except urllib2.URLError,e:
         if hasattr(e,"reason"):
             #print u"unable to get the urls"
-            LelianLogger.log(logging.ERROR,u"\nunable to get the urls")
+            LelianLogger.log('main',logging.ERROR,u"\nunable to get the urls")
             return None
 
 def getPageContent(url):
@@ -108,7 +108,7 @@ def getPageContent(url):
     except urllib2.URLError,e:
         if hasattr(e,"reason"):
             #print u"Fail to get page from ",url
-            LelianLogger.log(logging.ERROR,u"\nFail to get page from %s",url)
+            LelianLogger.log('main',logging.ERROR,u"\nFail to get page from %s",url)
             return None
 
 def getImgWithSrc(page,pageSeq,pageBaseUri):
@@ -271,10 +271,10 @@ def loop_body(last_startid):
                 recordlist = jsonUrlObj["data"]["data_record_list"]
                 for record in recordlist:
                     title = record["title"]
-                    title = title.encode('utf-8')
+                    
                     LelianLogger.log('main',logging.INFO,u"\nprocessing : %s，page url: %s",title,record["link_url"])
+                    #title = title.encode('utf-8')
                     #print '\nprocessing ',title,'\n','page url:',record["link_url"]
-
                     pageContent = getPageContent(record["link_url"])
                     if pageContent:
                         pageContent  = getBodyWithoutScript(pageContent)

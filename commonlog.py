@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 import logging
 import logging.config
 
@@ -47,5 +48,7 @@ class LelianLogger:
         logger.exception(msg,*args,**kwargs)
                     
 if __name__ == '__main__':
-    pass
+    LelianLogger.configLog('logging.conf')
+    LelianLogger.log('main',logging.INFO,u'中文  %s',u'测试')
+    
     
