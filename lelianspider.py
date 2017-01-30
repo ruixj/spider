@@ -155,7 +155,6 @@ def getImgWithSrc(page,pageSeq,pageBaseUri):
 
     return wxpsoup.prettify()
 
-
 def getWxImgInPage(page,pageSeq,attr):
     if not page:
         #print u"invalid page"
@@ -194,8 +193,7 @@ def getWxImgInPage(page,pageSeq,attr):
         imgSeq +=1
 
     return wxpsoup.prettify()
-
-    
+   
 def getWxImage2Local(url):
     headersL = {'User-Agent':FIREFOX}
     imgTypeReg = re.compile(r'wx_fmt=(.*)') 
@@ -208,7 +206,6 @@ def getWxImage2Local(url):
     #    if hasattr(e,"reason"):
     #        print u"Fail to get page from ",url
     #        return None
-
 
 def getTextAndImg(page):
     wxsoup = BeautifulSoup(page,'html.parser')
@@ -245,7 +242,6 @@ def mkdir(path):
         #print "folder ",path," already exists"
         return False
 
-
 def savePage(name,content):
     fileName = name + "/" + name + ".html"
     f = open(fileName,"w+")
@@ -253,7 +249,6 @@ def savePage(name,content):
     LelianLogger.log('main',logging.INFO,u"\nSaving page: %s",name)
     content = content.encode('utf-8')
     f.write(content)
-
 
 def loop_body(last_startid):
     jsonUrlsStr= geturls(last_startid,20,1)
