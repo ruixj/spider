@@ -106,7 +106,6 @@ class ImgUtil:
     
             imgSeq +=1
     
-        print wxpsoup.prettify()
         return wxpsoup.prettify()
     
  
