@@ -85,7 +85,7 @@ class lelianStore:
         response = opener.open(req)
         return response.read()
 
-class fileStore:
+class FileStoreUtil:
     @staticmethod
     def mkdir(path):
         path = path.strip()
@@ -115,7 +115,7 @@ class storeInterface(object):
         pass
     
     
-class store2Lelian(storeInterface):
+class Store2Lelian(storeInterface):
     def __init__(self):
         pass
     
@@ -123,12 +123,12 @@ class store2Lelian(storeInterface):
         lelianStore.login("tangzhen","123456")
         lelianStore.postarticle(title,content)
     
-class store2File(storeInterface):
+class Store2File(storeInterface):
     def __init__(self):
         pass
     
     def store(self,title,content):
-        fileStore.mkdir(title)
-        fileStore.savePage(title,content)
+        FileStoreUtil.mkdir(title)
+        FileStoreUtil.savePage(title,content)
 
     

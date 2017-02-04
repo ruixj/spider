@@ -106,6 +106,7 @@ class ImgUtil:
     
             imgSeq +=1
     
+        print wxpsoup.prettify()
         return wxpsoup.prettify()
     
  
@@ -124,8 +125,11 @@ class ImgProcessor(ProcessorInterface):
         LelianLogger.log('main',logging.INFO,u"\npage baseUri: %s",kwargs['pageBaseUri'])
         if kwargs['pageBaseUri']:
             pageContent  = ImgUtil.getImgWithSrc(kwargs['pageContent'],kwargs['pageSeq'],kwargs['pageBaseUri'])
-            pageContent  = ImgUtil.getWxImgInPage(kwargs['pageContent'],kwargs['pageSeq'],'data-src')
-            pageContent  = ImgUtil.getWxImgInPage(kwargs['pageContent'],kwargs['pageSeq'],'data-backsrc')
+ 
+            pageContent  = ImgUtil.getWxImgInPage(pageContent,kwargs['pageSeq'],'data-src')
+ 
+            pageContent  = ImgUtil.getWxImgInPage(pageContent,kwargs['pageSeq'],'data-backsrc')
+ 
             
         return pageContent
     
@@ -166,3 +170,5 @@ class TxtImgProcessor(ProcessorInterface):
         newsoup.append(btagnew) 
         #processChildren2(bodyElem,btagnew,newsoup)
         processChildren(bodyElem,btagnew,newsoup)
+        
+        return newsoup.prettify()

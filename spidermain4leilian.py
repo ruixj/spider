@@ -20,28 +20,9 @@ from  content import *
 from  processor import *
 from pip._vendor.requests.packages.urllib3 import filepost
 
+from pagestore import *
+
 FIREFOX  = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'
-
-
-
-def mkdir(path):
-    path = path.strip()
-    isExists = os.path.exists(path)
-    if not isExists:
-        #print u"creating folder",path
-        os.makedirs(path)
-        return True 
-    else:
-        #print "folder ",path," already exists"
-        return False
-
-def savePage(name,content):
-    fileName = name + "/" + name + ".html"
-    f = open(fileName,"w+")
-    #print u"Saving page", name
-    LelianLogger.log('main',logging.INFO,u"\nSaving page: %s",name)
-    content = content.encode('utf-8')
-    f.write(content)
 
 class URLMainProcessor:
     def geturls(self,start_id,page_size,page_num):
@@ -106,8 +87,11 @@ class URLMainProcessor:
                                 txtImgProcessor = TxtImgProcessor()
                                 pageContent = txtImgProcessor.process(**params)
     
-                                mkdir(title)
-                                savePage(title,pageContent)
+                                #mkdir(title)
+                                #savePage(title,pageContent)
+                                store = Store2File()
+                                store = Store2Lelian()
+                                store.store(title, content) 
     
                                 #login("tangzhen","123456")
                                 #postarticle(title,pageContent)
@@ -157,8 +141,8 @@ class URLMainProcessor:
             print last_startid
 
 class FileMainProcessor:
-    def loop_boody(self,filePath):
-        pageSeq = 0
+    def loop_body(self,filePath):
+        pageSeq = 1
        
         fileCp = FileContentProvider()
         pageContent = fileCp.getContent(filePath)
@@ -172,7 +156,7 @@ class FileMainProcessor:
             pageContentWithBody += "</body>"
             
             scriptProcessor = ScriptProcessor()
-            params = {'pageContent':pageContent}
+            params = {'pageContent':pageContentWithBody}
             pageContent = scriptProcessor.process(**params)
    
             imgProcessor = ImgProcessor()
@@ -181,6 +165,7 @@ class FileMainProcessor:
                       'pageBaseUri':' '}
             pageContent  = imgProcessor.process(**params)
 
+            print pageContent
             params = {'pageContent':pageContent}
             txtImgProcessor = TxtImgProcessor()
             pageContent = txtImgProcessor.process(**params)
@@ -190,10 +175,13 @@ class FileMainProcessor:
 
             #login("tangzhen","123456")
             #postarticle(title,pageContent)
+            
+            store = Store2File()
+            store.store('test1', pageContent) 
     
         
     def main(self):
-        filePath = 'test.txt'
+        filePath = 'test.html'
         self.loop_body(filePath)
     
  
