@@ -245,6 +245,7 @@ def savePage(name,content):
 
 
 def loop_body(last_startid):
+    print last_startid
     jsonUrlsStr= geturls(last_startid,20,1)
     pageSeq = last_startid
     if jsonUrlsStr:
