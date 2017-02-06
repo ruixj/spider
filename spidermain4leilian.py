@@ -41,7 +41,7 @@ class URLMainProcessor:
         except urllib2.URLError,e:
             if hasattr(e,"reason"):
                 #print u"unable to get the urls"
-                LelianLogger.log('main',logging.ERROR,u"\nunable to get the urls")
+                LelianLogger.log('main',logging.ERROR,u"unable to get the urls")
                 return None
             
     def loop_body(self,last_startid):
@@ -61,7 +61,7 @@ class URLMainProcessor:
                     for record in recordlist:
                         title = record["title"]
                         
-                        LelianLogger.log('main',logging.INFO,u"\nprocessing : %s，page url: %s",title,record["link_url"])
+                        LelianLogger.log('main',logging.INFO,u"processing : %s，page url: %s",title,record["link_url"])
                         #title = title.encode('utf-8')
                         #print '\nprocessing ',title,'\n','page url:',record["link_url"]
                         contentProvider = UrlContentProvider()
@@ -75,7 +75,7 @@ class URLMainProcessor:
                             
                             pageBaseUri  = getPageUrlBaseUri(record["link_url"])
                             #print "page baseUri:", pageBaseUri
-                            LelianLogger.log('main',logging.INFO,u"\npage baseUri: %s",pageBaseUri)
+                            LelianLogger.log('main',logging.INFO,u"page baseUri: %s",pageBaseUri)
                             if pageBaseUri:
                                 imgProcessor = ImgProcessor()
                                 params = {'pageContent':pageContent,

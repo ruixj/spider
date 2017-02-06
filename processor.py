@@ -27,7 +27,7 @@ class ImgUtil:
     def getImgWithSrc(page,pageSeq,pageBaseUri):
         if not page:
             #print u"invalid page"
-            LelianLogger.log('main',logging.ERROR,u"\ninvalid page")
+            LelianLogger.log('main',logging.ERROR,u"invalid page")
     
         wxpsoup = BeautifulSoup(page)
         #getTextAndImg(wxpsoup)
@@ -54,9 +54,9 @@ class ImgUtil:
             imgName = getImgName(pageSeq,'src',imgSeq,imgExt)
     
             #print 'img src url:', imgurl
-            LelianLogger.log('main',logging.INFO,u"\nimg src url: %s",imgurl)
+            LelianLogger.log('main',logging.INFO,u"img src url: %s",imgurl)
             resurl = storeImg2AliOss(imgurl,imgName)
-            LelianLogger.log('main',logging.INFO,u"\nlelian pic url: %s",resurl)
+            LelianLogger.log('main',logging.INFO,u"lelian pic url: %s",resurl)
             #print 'lelian pic url:', resurl
     
             img['src'] = resurl
@@ -72,7 +72,7 @@ class ImgUtil:
     def getWxImgInPage(page,pageSeq,attr):
         if not page:
             #print u"invalid page"
-            LelianLogger.log('main',logging.ERROR,u"\ninvalid page")
+            LelianLogger.log('main',logging.ERROR,u"invalid page")
     
         wxpsoup = BeautifulSoup(page)
         #1. find img 
@@ -92,9 +92,9 @@ class ImgUtil:
                     continue
                 
             #print 'imgurl:',imgurl
-            LelianLogger.log('main',logging.INFO,u"\nimgurl:%s",imgurl)
+            LelianLogger.log('main',logging.INFO,u"imgurl:%s",imgurl)
             resurl = storeImg2AliOss(imgurl,imgName)
-            LelianLogger.log('main',logging.INFO,u"\nlelianpic url:%s",resurl)
+            LelianLogger.log('main',logging.INFO,u"lelianpic url:%s",resurl)
             #print 'lelianpic url:',resurl
     
             img['src'] = resurl
@@ -121,7 +121,7 @@ class ImgProcessor(ProcessorInterface):
     def process(self,**kwargs):      
     #def process(self,pageContent,pageSeq,pageBaseUri):  
         #print "page baseUri:", pageBaseUri
-        LelianLogger.log('main',logging.INFO,u"\npage baseUri: %s",kwargs['pageBaseUri'])
+        LelianLogger.log('main',logging.INFO,u"page baseUri: %s",kwargs['pageBaseUri'])
         if kwargs['pageBaseUri']:
             pageContent  = ImgUtil.getImgWithSrc(kwargs['pageContent'],kwargs['pageSeq'],kwargs['pageBaseUri'])
  
