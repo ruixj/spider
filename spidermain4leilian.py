@@ -89,7 +89,7 @@ class URLMainProcessor:
     
                                 #mkdir(title)
                                 #savePage(title,pageContent)
-                                store = Store2Lelian()
+                                #store = Store2File()
                                 store = Store2Lelian()
                                 store.store(title, content) 
     
@@ -140,51 +140,7 @@ class URLMainProcessor:
              
             print last_startid
 
-class FileMainProcessor:
-    def loop_body(self,filePath):
-        pageSeq = 1
-       
-        fileCp = FileContentProvider()
-        pageContent = fileCp.getContent(filePath)
-        
 
-        if pageContent:
-            pageContentWithBody = '<body>' 
-            
-            pageContentWithBody += pageContent
-            
-            pageContentWithBody += "</body>"
-            
-            scriptProcessor = ScriptProcessor()
-            params = {'pageContent':pageContentWithBody}
-            pageContent = scriptProcessor.process(**params)
-   
-            imgProcessor = ImgProcessor()
-            params = {'pageContent':pageContent,
-                      'pageSeq':pageSeq,
-                      'pageBaseUri':' '}
-            pageContent  = imgProcessor.process(**params)
-
-            print pageContent
-            params = {'pageContent':pageContent}
-            txtImgProcessor = TxtImgProcessor()
-            pageContent = txtImgProcessor.process(**params)
-
-            #mkdir(title)
-            #savePage(title,pageContent)
-
-            #login("tangzhen","123456")
-            #postarticle(title,pageContent)
-            
-            store = Store2File()
-            store.store('test1', pageContent) 
-    
-        
-    def main(self):
-        filePath = 'test.html'
-        self.loop_body(filePath)
-    
- 
     
 if __name__ == '__main__':
     LelianLogger.configLog('logging.conf')
