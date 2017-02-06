@@ -18,7 +18,6 @@ from commonlog import  *
 import time
 from  content import *
 from  processor import *
-from pip._vendor.requests.packages.urllib3 import filepost
 
 from pagestore import *
 
