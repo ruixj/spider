@@ -129,17 +129,17 @@ class URLMainProcessor:
     
     def main(self):
         last_startid = self.read_last_startid()
-        print last_startid
+        LelianLogger.log('main',logging.INFO,u"starting last_startid : %s",last_startid)
         #last_startid +=1
         while True:
-            last_startid = self.loop_body(last_startid)
-            self.save_last_startid(last_startid)
-    
-            LelianLogger.log('main',logging.INFO,u"Sleeping")
-    
-            time.sleep(3*60)
-             
-            print last_startid
+            last_startid_new = self.loop_body(last_startid)
+            self.save_last_startid(last_startid_new)
+            if(last_startid_new  == last_startid ):
+                LelianLogger.log('main',logging.INFO,u"Sleeping")
+                time.sleep(3*60)
+            else:
+                last_startid = last_startid_new
+            LelianLogger.log('main',logging.INFO,u"last_startid : %s",last_startid)
 
 
     
