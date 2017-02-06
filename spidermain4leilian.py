@@ -89,7 +89,7 @@ class URLMainProcessor:
     
                                 #mkdir(title)
                                 #savePage(title,pageContent)
-                                store = Store2File()
+                                store = Store2Lelian()
                                 store = Store2Lelian()
                                 store.store(title, content) 
     
