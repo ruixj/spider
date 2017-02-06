@@ -91,7 +91,7 @@ class URLMainProcessor:
                                 #savePage(title,pageContent)
                                 #store = Store2File()
                                 store = Store2Lelian()
-                                store.store(title, content) 
+                                store.store(title, pageContent) 
     
                                 #login("tangzhen","123456")
                                 #postarticle(title,pageContent)
