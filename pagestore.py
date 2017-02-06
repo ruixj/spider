@@ -62,7 +62,7 @@ class lelianStore:
         cookie.load('cookie.txt', ignore_discard=True, ignore_expires=True)
     
         #title   = urllib.quote(title)
-        #title    = title.encode('utf-8')
+        title    = title.encode('utf-8')
      
         #content = Html2UBB(content)
         #content = urllib.quote(content)
