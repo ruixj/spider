@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 import urllib2
 
 def sendReq(url):

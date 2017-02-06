@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 class strUtil:
     @staticmethod
     def removeSpace(strIn):
