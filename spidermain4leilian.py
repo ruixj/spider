@@ -20,13 +20,14 @@ from  content import *
 from  processor import *
 
 from pagestore import *
+from ghostcontent import DynamicContentProvider
 
 FIREFOX  = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'
 
 class URLMainProcessor:
     def __init__(self):
-        self.contentProvider = UrlContentProvider()
-        #self.contentProvider = DynamicContentProvider()
+        #self.contentProvider = UrlContentProvider()
+        self.contentProvider = DynamicContentProvider()
         self.scriptProcessor = ScriptProcessor()
         self.imgProcessor = ImgProcessor()
         self.rdbProcessor = ReadProcessor()
