@@ -11,6 +11,8 @@ from commonlog import LelianLogger
 import logging
 from strutil import *
 from extractor import *
+from readability import Readability
+
 class ProcessorInterface(object):
     '''
     classdocs
@@ -171,3 +173,19 @@ class TxtImgProcessor(ProcessorInterface):
         processChildren(bodyElem,btagnew,newsoup)
         
         return newsoup.prettify()
+
+class ReadProcessor(ProcessorInterface):
+    '''
+    classdocs
+    '''
+    def __init__(self):
+        '''
+        Constructor
+        '''
+    def process(self,**kwargs):
+        pageContent = kwargs['pageContent']
+        url         = kwargs['pageBaseUri']
+        
+        readability = Readability(pageContent,url)
+
+        return readability.content

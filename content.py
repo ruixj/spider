@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 Created on 2017-1-28
 
@@ -10,6 +11,7 @@ import json
 import string
 from commonlog import LelianLogger
 import logging
+from qt4wkrender import QtWKPageRender
 
 FIREFOX2 = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
 class ContentProvider(object):
@@ -58,3 +60,19 @@ class FileContentProvider(ContentProvider):
         f = open(filePath)
         fileContent = f.read()
         return fileContent           
+
+
+class DynamicContentProvider(ContentProvider):
+    '''
+    classdocs
+    '''
+    def __init__(self):
+        '''
+        Constructor
+        '''
+    def getContent(self,url):
+        r = QtWKPageRender(url)
+        result = r.frame.toHtml()
+        content = str(result.toUtf8())
+        return content
+

@@ -24,6 +24,12 @@ from pagestore import *
 FIREFOX  = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'
 
 class URLMainProcessor:
+    def __init__(self):
+        self.contentProvider = UrlContentProvider()
+        #self.contentProvider = DynamicContentProvider()
+        self.scriptProcessor = ScriptProcessor()
+        self.imgProcessor = ImgProcessor()
+        self.rdbProcessor = ReadProcessor()
     def geturls(self,start_id,page_size,page_num):
      
         values = {'start_id':start_id,
@@ -63,28 +69,32 @@ class URLMainProcessor:
                         LelianLogger.log('main',logging.INFO,u"processing : %s，page url: %s",title,record["link_url"])
                         #title = title.encode('utf-8')
                         #print '\nprocessing ',title,'\n','page url:',record["link_url"]
-                        contentProvider = UrlContentProvider()
-                        pageContent = contentProvider.getContent(record["link_url"])
+
+                        pageContent = self.contentProvider.getContent(record["link_url"])
                         #pageContent = getPageContent(record["link_url"])
                         if pageContent:
     
-                            scriptProcessor = ScriptProcessor()
+                            
                             params = {'pageContent':pageContent}
-                            pageContent = scriptProcessor.process(**params)
+                            pageContent = self.scriptProcessor.process(**params)
                             
                             pageBaseUri  = getPageUrlBaseUri(record["link_url"])
                             #print "page baseUri:", pageBaseUri
                             LelianLogger.log('main',logging.INFO,u"page baseUri: %s",pageBaseUri)
                             if pageBaseUri:
-                                imgProcessor = ImgProcessor()
+                                
                                 params = {'pageContent':pageContent,
                                           'pageSeq':pageSeq,
                                           'pageBaseUri':pageBaseUri}
-                                pageContent  = imgProcessor.process(**params)
+                                pageContent  = self.imgProcessor.process(**params)
     
-                                params = {'pageContent':pageContent}
-                                txtImgProcessor = TxtImgProcessor()
-                                pageContent = txtImgProcessor.process(**params)
+                                params = {'pageContent':pageContent,
+                                          'pageBaseUri':pageBaseUri}
+                                #txtImgProcessor = TxtImgProcessor()
+                                #pageContent = txtImgProcessor.process(**params)
+
+                                
+                                pageContent  = self.rdbProcessor.process(**params)
     
                                 #mkdir(title)
                                 #savePage(title,pageContent)
