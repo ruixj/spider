@@ -96,7 +96,9 @@ class URLMainProcessor:
 
                                 
                                 pageContent  = self.rdbProcessor.process(**params)
-    
+                                print pageContent
+                                pageContent  = Html2UBB(pageContent)
+                                print pageContent
                                 #mkdir(title)
                                 #savePage(title,pageContent)
                                 #store = Store2File()
