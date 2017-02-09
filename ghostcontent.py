@@ -5,7 +5,8 @@ Created on Feb 7, 2017
 '''
 from ghost import Ghost
 from content import ContentProvider
-
+from content import UrlContentProvider
+from commonlog import *
 class DynamicContentProvider(ContentProvider):
     '''
     classdocs
@@ -16,14 +17,19 @@ class DynamicContentProvider(ContentProvider):
         '''
         self.gh = None
         self.page = None
+        self.staticPageContent = UrlContentProvider()
         
     def getContent(self,url):
         
         if( self.gh is None):
             self.gh = Ghost()
-            self.page, self.page_name = self.gh.create_page()
-            
-        self.page_resource = self.page.open(url, wait_onload_event=True)
+            self.page, self.page_name = self.gh.create_page(120)
+        try:    
+            self.page_resource = self.page.open(url, wait_onload_event=True)
+        except Exception,e:
+            LelianLogger.log('main',logging.ERROR,u"Timeout to get page: %s",url)
+            self.content = self.staticPageContent.getContent(url)
+            return self.content
         
         return self.page.content
     
