@@ -67,6 +67,14 @@ def processChildren(elem,news,newsoup):
                  or astrcmp(child.name,'strong')
                  or astrcmp(child.name,'li')
                  or astrcmp(child.name,'ul')
+                 or astrcmp(child.name,'ol')
+                 or astrcmp(child.name,'h1')
+                 or astrcmp(child.name,'h2')
+                 or astrcmp(child.name,'h3')
+                 or astrcmp(child.name,'h4')
+                 or astrcmp(child.name,'h5')
+                 or astrcmp(child.name,'h6')
+                 or astrcmp(child.name,'blockquote')
                  ):
             #elif(not astrcmp(child.name,'div')):
                 copyElement(child,news,newsoup)

@@ -91,14 +91,15 @@ class URLMainProcessor:
     
                                 params = {'pageContent':pageContent,
                                           'pageBaseUri':pageBaseUri}
-                                #txtImgProcessor = TxtImgProcessor()
-                                #pageContent = txtImgProcessor.process(**params)
-
+                                txtImgProcessor = TxtImgProcessor()
+                                pageContent = txtImgProcessor.process(**params)
                                 
-                                pageContent  = self.rdbProcessor.process(**params)
-                                print pageContent
-                                pageContent  = Html2UBB(pageContent)
-                                print pageContent
+                                pageContent = pageContent.replace(u'\r',u'').replace(u'\n',u'')
+                                
+                                #pageContent  = self.rdbProcessor.process(**params)
+                                #print pageContent
+                                #pageContent  = Html2UBB(pageContent)
+                                #print pageContent
                                 #mkdir(title)
                                 #savePage(title,pageContent)
                                 #store = Store2File()

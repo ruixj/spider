@@ -83,7 +83,8 @@ class lelianStore:
     
         opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
         response = opener.open(req)
-        return response.read()
+        res =  response.read()
+        return res
 
 class FileStoreUtil:
     @staticmethod
@@ -120,7 +121,7 @@ class Store2Lelian(storeInterface):
         pass
     
     def store(self,title,content):
-        lelianStore.login("tangzhen","123456")
+        lelianStore.login("乐莲养老","123456")
         lelianStore.postarticle(title,content)
     
 class Store2File(storeInterface):
