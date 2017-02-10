@@ -148,7 +148,15 @@ class ScriptProcessor(ProcessorInterface):
         scripts= wxsoup.find_all("script")
         for script in scripts:
             script.decompose()
-    
+            
+        styles = wxsoup.find_all("style")
+        for style in styles:
+            style.decompose()
+            
+        links = wxsoup.find_all("link")
+        for link in links:
+            link.decompose()            
+            
         content = str(wxsoup.body)
         return content 
     

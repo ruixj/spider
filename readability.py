@@ -130,7 +130,7 @@ class Readability:
                 self.candidates[grandParentHash] = self.initializeNode(grandParentNode)
 
             contentScore = 1
-            contentScore += innerText.count(',')
+            contentScore += innerText.count(u',')
             contentScore += innerText.count(u'，')
             contentScore +=  min(math.floor(len(innerText) / 100), 3)
 
