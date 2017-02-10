@@ -161,6 +161,7 @@ class ScriptProcessor(ProcessorInterface):
         return content 
     
 class TxtImgProcessor(ProcessorInterface):
+ 
     '''
     classdocs
     '''
@@ -171,6 +172,7 @@ class TxtImgProcessor(ProcessorInterface):
     def process(self,**kwargs):  
         wxsoup = BeautifulSoup(kwargs['pageContent'],'html.parser')
         bodyElem = wxsoup.body
+  
         #print bodyElem.prettify()
         #print bodyElem.contents[0]
         #loop through the children
