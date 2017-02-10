@@ -157,7 +157,7 @@ class ScriptProcessor(ProcessorInterface):
         for link in links:
             link.decompose()            
             
-        content = str(wxsoup.body)
+        content = unicode(wxsoup.body)
         return content 
     
 class TxtImgProcessor(ProcessorInterface):
@@ -182,7 +182,8 @@ class TxtImgProcessor(ProcessorInterface):
         #processChildren2(bodyElem,btagnew,newsoup)
         processChildren(bodyElem,btagnew,newsoup)
         
-        return newsoup.prettify()
+        return unicode(newsoup)
+        #return newsoup.prettify()
 
 class ReadProcessor(ProcessorInterface):
     '''
