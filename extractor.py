@@ -7,7 +7,30 @@ import bs4
 from bs4 import BeautifulSoup
 from bs4 import Comment
 import re
- 
+
+regexps = {
+    'unlikelyCandidates': re.compile("combx|comment|community|disqus|extra|foot|header|menu|"
+                                     "remark|rss|shoutbox|sidebar|sponsor|ad-break|agegate|"
+                                     "pagination|pager|popup|tweet|twitter",re.I),
+    'okMaybeItsACandidate': re.compile("and|article|body|column|main|shadow", re.I),
+    'positive': re.compile("article|body|content|entry|hentry|main|page|pagination|post|text|"
+                           "blog|story",re.I),
+    'negative': re.compile("combx|comment|com|contact|foot|footer|footnote|masthead|media|"
+                           "meta|outbrain|promo|related|scroll|shoutbox|sidebar|sponsor|"
+                           "shopping|tags|tool|widget", re.I),
+    'extraneous': re.compile("print|archive|comment|discuss|e[\-]?mail|share|reply|all|login|"
+                             "sign|single",re.I),
+    'divToPElements': re.compile("<(a|blockquote|dl|div|img|ol|p|pre|table|ul)",re.I),
+    'replaceBrs': re.compile("(<br[^>]*>[ \n\r\t]*){2,}",re.I),
+    'replaceFonts': re.compile("<(/?)font[^>]*>",re.I),
+    'trim': re.compile("^\s+|\s+$",re.I),
+    'normalize': re.compile("\s{2,}",re.I),
+    'killBreaks': re.compile("(<br\s*/?>(\s|&nbsp;?)*)+",re.I),
+    'videos': re.compile("http://(www\.)?(youtube|vimeo)\.com",re.I),
+    'skipFootnoteLink': re.compile("^\s*(\[?[a-z0-9]{1,2}\]?|^|edit|citation needed)\s*$",re.I),
+    'nextLink': re.compile("(next|weiter|continue|>([^\|]|$)|»([^\|]|$))",re.I),
+    'prevLink': re.compile("(prev|earl|old|new|<|«)",re.I)
+}   
        
 def copyPTag(elem,news,newsoup):
     pnewTag = newsoup.new_tag('p')
@@ -52,6 +75,13 @@ def processChildren2(elem,news,newsoup):
 def processChildren(elem,news,newsoup):
     for child in elem.contents:
         if isinstance(child,bs4.element.Tag):
+            unlikelyMatchString = child.get('id','')+''.join(child.get('class',''))
+
+            if  regexps['unlikelyCandidates'].search(unlikelyMatchString) and \
+                not regexps['okMaybeItsACandidate'].search(unlikelyMatchString) and \
+                child.name != 'body':
+                continue
+            
             style = child.get('style')
             if(style):
                 imgFmtReg = re.compile(r'display:none')
@@ -61,13 +91,43 @@ def processChildren(elem,news,newsoup):
 
             if (child.name == 'p'):
                 copyPTag(child,news,newsoup)
+            elif ( astrcmp(child.name,'ul')
+                   or astrcmp(child.name,'ol')):
+                #check if the child has paragraph
+                lilist = child.find_all('li')
+                alist = child.find_all('a')
+                plist = child.find_all('p')
+                
+                lilstlen= len(lilist)
+                alstlen = len(alist)
+                plstlen = len(plist)
+                
+                strlstlen = 0
+                for string in child.stripped_strings:
+                    strlstlen += 1 
+                
+                score = 0;
+                if(plstlen < alstlen):
+                    score += -1
+                elif( plstlen > 0 and plstlen >= alstlen):
+                    score += 2
+                    
+                if(strlstlen > 0):
+                    score +=1
+                    
+                if(alstlen == lilstlen):
+                    score += -2
+                    
+                if(score > 0):
+                   copyElement(child,news,newsoup)
+                else:
+                    continue
+                                  
             elif(astrcmp(child.name, 'img') 
                  or astrcmp(child.name, 'b') 
                  or astrcmp(child.name, 'span')
                  or astrcmp(child.name,'strong')
                  or astrcmp(child.name,'li')
-                 or astrcmp(child.name,'ul')
-                 or astrcmp(child.name,'ol')
                  or astrcmp(child.name,'h1')
                  or astrcmp(child.name,'h2')
                  or astrcmp(child.name,'h3')
@@ -84,6 +144,8 @@ def processChildren(elem,news,newsoup):
                  or astrcmp(child.name,'small')
                  or astrcmp(child.name,'sub')
                  or astrcmp(child.name,'sup')
+                 or astrcmp(child.name,'embed')
+                 or astrcmp(child.name,'iframe')
                  ):
             #elif(not astrcmp(child.name,'div')):
                 copyElement(child,news,newsoup)
@@ -96,7 +158,8 @@ def processChildren(elem,news,newsoup):
                 news.append(nstr)
                 #pass
             else:
-                nstr = newsoup.new_string(child)
+                
+                nstr = newsoup.new_string(child)                
                 news.append(nstr)
         else:        
            continue 

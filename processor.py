@@ -68,7 +68,7 @@ class ImgUtil:
                 img['style'] = style
             imgSeq += 1
     
-        return wxpsoup.prettify()
+        return unicode(wxpsoup)
     
     @staticmethod
     def getWxImgInPage(page,pageSeq,attr):
@@ -108,9 +108,47 @@ class ImgUtil:
     
             imgSeq +=1
     
-        return wxpsoup.prettify()
+        return unicode(wxpsoup)
     
- 
+    @staticmethod
+    def getWxIframeInPage(page,pageSeq,attr):
+        if not page:
+            #print u"invalid page"
+            LelianLogger.log('main',logging.ERROR,u"invalid page")
+    
+        wxpsoup = BeautifulSoup(page)
+        #1. find img 
+        datasrcImgList = wxpsoup.find_all("iframe",attrs={attr: True})
+        imgSeq = 1
+        for hiframe in datasrcImgList:
+            imgurl = hiframe[attr]
+            imgurl = strUtil.removeSpace(imgurl)
+    
+            imgExt = getImgExt(imgurl)
+            imgName = getImgName(pageSeq,attr,imgSeq,imgExt)
+    
+            if(not checkUrlWithHttp(imgurl)):
+                if imgurl:
+                    imgurl = "http:" + imgurl
+                else:
+                    continue
+                
+            #print 'imgurl:',imgurl
+            LelianLogger.log('main',logging.INFO,u"imgurl:%s",imgurl)
+            resurl = imgurl;
+            LelianLogger.log('main',logging.INFO,u"lelianpic url:%s",resurl)
+            #print 'lelianpic url:',resurl
+    
+            hiframe['src'] = resurl
+    
+            style = hiframe.get('style')
+            if(style):
+                style = strUtil.removeAttrInCss(style,'opacity')
+                hiframe['style'] = style
+    
+            imgSeq +=1
+    
+        return unicode(wxpsoup)
         
 class ImgProcessor(ProcessorInterface):
     '''
@@ -130,7 +168,8 @@ class ImgProcessor(ProcessorInterface):
             pageContent  = ImgUtil.getWxImgInPage(pageContent,kwargs['pageSeq'],'data-src')
  
             pageContent  = ImgUtil.getWxImgInPage(pageContent,kwargs['pageSeq'],'data-backsrc')
- 
+            
+            pageContent  = ImgUtil.getWxIframeInPage(pageContent,kwargs['pageSeq'],'data-src')
             
         return pageContent
     
