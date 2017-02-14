@@ -12,6 +12,7 @@ import logging
 from strutil import *
 from extractor import *
 from readability import Readability
+from itertools import compress
 
 class ProcessorInterface(object):
     '''
@@ -221,8 +222,8 @@ class TxtImgProcessor(ProcessorInterface):
         #processChildren2(bodyElem,btagnew,newsoup)
         processChildren(bodyElem,btagnew,newsoup)
         
-        return unicode(newsoup)
-        #return newsoup.prettify()
+        #return unicode(newsoup)
+        return newsoup.prettify()
 
 class ReadProcessor(ProcessorInterface):
     '''
@@ -239,3 +240,26 @@ class ReadProcessor(ProcessorInterface):
         readability = Readability(pageContent,url)
 
         return readability.content
+    
+class FormatProcessor(ProcessorInterface):
+    '''
+    classdocs
+    '''
+    def __init__(self):
+        '''
+        Constructor
+        '''
+    def process(self,**kwargs):
+        pageContent = kwargs['pageContent']
+        ContentLines = pageContent.splitlines()
+        compressedContent = ''
+        for cl in ContentLines:
+            if cl[-1] == u'>':
+                compressedContent += cl
+            else:
+                compressedContent += cl
+                compressedContent += u'\n'
+        return compressedContent
+                
+
+         

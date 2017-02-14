@@ -31,6 +31,7 @@ class URLMainProcessor:
         self.scriptProcessor = ScriptProcessor()
         self.imgProcessor = ImgProcessor()
         self.rdbProcessor = ReadProcessor()
+        self.fmtProcessor = FormatProcessor()
     def geturls(self,start_id,page_size,page_num):
      
         values = {'start_id':start_id,
@@ -94,7 +95,12 @@ class URLMainProcessor:
                                 txtImgProcessor = TxtImgProcessor()
                                 pageContent = txtImgProcessor.process(**params)
                                 
-                                pageContent = pageContent.replace(u'\r',u'').replace(u'\n',u'')
+                                params = {'pageContent':pageContent}
+                                pageContent = self.fmtProcessor.process(**params)
+                                
+                                
+                                #print pageContent;
+                                #pageContent = pageContent.replace(u'\r',u'').replace(u'\n',u'')
                                 
                                 #pageContent  = self.rdbProcessor.process(**params)
                                 #print pageContent

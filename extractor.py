@@ -90,7 +90,16 @@ def processChildren(elem,news,newsoup):
                     continue
 
             if (child.name == 'p'):
-                copyPTag(child,news,newsoup)
+                bHasTxt = False
+                for str in  child.stripped_strings:
+                    if str != u'':
+                        bHasTxt = True
+                        break
+                imglst = child.find_all('img')
+                
+                if(bHasTxt or len(imglst) > 0): 
+                    copyPTag(child,news,newsoup)
+                    
             elif ( astrcmp(child.name,'ul')
                    or astrcmp(child.name,'ol')):
                 #check if the child has paragraph
@@ -146,6 +155,7 @@ def processChildren(elem,news,newsoup):
                  or astrcmp(child.name,'sup')
                  or astrcmp(child.name,'embed')
                  or astrcmp(child.name,'iframe')
+                 or astrcmp(child.name,'br')
                  ):
             #elif(not astrcmp(child.name,'div')):
                 copyElement(child,news,newsoup)
