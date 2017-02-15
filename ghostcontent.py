@@ -23,7 +23,7 @@ class DynamicContentProvider(ContentProvider):
         
         if( self.gh is None):
             self.gh = Ghost()
-            self.page, self.page_name = self.gh.create_page(120)
+            self.page, self.page_name = self.gh.create_page(600)
         try:    
             self.page_resource = self.page.open(url, wait_onload_event=True)
         except Exception,e:
