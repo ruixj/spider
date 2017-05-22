@@ -1,0 +1,95 @@
+#coding=utf-8
+import sys
+# import urllib
+# import urllib2
+# import cookielib
+from helper.tools import *
+from helper.parse_page import *
+from lxml import etree
+import json
+
+# todo 尝试使用 scrapy
+
+reload(sys)
+sys.setdefaultencoding('utf8')
+sys.setrecursionlimit(2000)
+
+class WPPoster:
+    wp_url      = "http://www.microlele.com/dev/wp-json/wp/v2/posts"
+    wp_url_tags = "http://www.microlele.com/dev/wp-json/wp/v2/tags"
+    username    = "Admin"
+    password    = "Tjjtds@1"
+    
+    def __init__(self):
+       pass 
+
+    def post2wp(self,title,content):
+        ready_cate_id = "11"
+        wp_data = {}
+        wp_headers = {}
+        old_tags = {}
+
+        # todo 先获取所有的 old tags
+        res_old_tags = Crawl_helper_tools_url.http_auth_handle_get_tag(WPPoster.wp_url_tags,wp_data)
+        if (res_old_tags == "fail"):
+            print('获取标签失败')
+            sys.exit()
+
+        decode_res_tags = json.loads(res_old_tags)
+        for res_tag in decode_res_tags:
+            old_tags[res_tag['name']] = res_tag['id']
+        print('已经存在的标签列表：')
+        print(old_tags)
+
+        #posturl = 'http://news.sina.com.cn/china/xlxw/2017-05-14/doc-ifyfeius7910013.shtml'
+        #root_url = 'http://blog.csdn.net'
+        # var = 'this is a var in'
+        # print(Crawl_helper_tools_url.testfunction(var))
+
+        headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0','Referer' : 'http:www.share345.com'}
+
+        #crawl_url = Crawl_helper_tools_url(posturl,root_url)
+
+        #html = crawl_url.getCurl(posturl,{},headers)
+        #print html
+        #if html == '' or html == 'None':
+        #    print '读取 html 失败'
+        #    sys.exit()
+
+        #tree = etree.HTML(html)
+         
+         
+        try:
+
+            page_content = content;
+
+            wp_data['status']  = "publish"
+            wp_data['title']   =  title 
+            wp_data['content'] = page_content
+            wp_data['author']  = 1
+            #wp_data['slug'] = "test"
+            #wp_data['categories[0]'] = ready_cate_id
+
+            #for tag_i in range(len(page_tags)):
+             #   print(page_tags[tag_i])
+              #  wp_data["tags["+str(tag_i)+"]"] = old_tags[page_tags[tag_i].decode('utf-8')]
+
+         
+            res = Crawl_helper_tools_url.http_auth(
+                                                   WPPoster.username,
+                                                   WPPoster.password,
+                                                   WPPoster.wp_url,
+                                                   WPPoster.wp_data,
+                                                   WPPoster.wp_headers)
+
+            if (res == "fail"):
+                print u"添加失败"
+            # sys.exit()
+
+        except Exception , e:
+            print u'except 某篇文章出错....',e
+         
+if __name__ == "__main__":
+    wpposter = WPPoster()
+    wpposter.post2wp(u'你好微乐乐', u'我的好朋友')
+
