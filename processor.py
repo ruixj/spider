@@ -200,6 +200,40 @@ class ScriptProcessor(ProcessorInterface):
         content = unicode(wxsoup.body)
         return content 
     
+class TitleProcessor(ProcessorInterface):
+    '''
+    classdocs
+    '''
+    def __init__(self):
+        '''
+        Constructor
+        '''     
+    def process(self,**kwargs):  
+        wxsoup = BeautifulSoup(kwargs['pageContent'])
+        name = wxsoup.find('title')
+        return name.string
+
+class FirstImgProcessor(ProcessorInterface):
+    '''
+    classdocs
+    '''
+    def __init__(self):
+        '''
+        Constructor
+        '''     
+    def process(self,**kwargs):  
+        wxsoup = BeautifulSoup(kwargs['pageContent'])
+        print kwargs['pageContent']
+        firstImg= wxsoup.find("img",attrs={'src': True})
+        imgurl = None 
+        print firstImg
+        if firstImg:
+            imgurl = firstImg['src']
+        #name = soup.find('img')
+
+        return imgurl 
+    
+    
 class TxtImgProcessor(ProcessorInterface):
  
     '''

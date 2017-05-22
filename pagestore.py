@@ -132,4 +132,112 @@ class Store2File(storeInterface):
         FileStoreUtil.mkdir(title)
         FileStoreUtil.savePage(title,content)
 
+class Store2Weilele(storeInterface):
+    @staticmethod
+    def http_auth_post(username, password, url, data = {}, headers = {}):
+        auth = base64.b64encode(username+ ':'+ password)
+        headers["Authorization"] = "Basic "+ auth
+ 
+        # data - dict
+        data = urllib.urlencode(data)
+        req = urllib2.Request(url, data, headers)
+        try:
+            response = urllib2.urlopen(req,timeout=5)
+        except socket.timeout:
+            LelianLogger.log('main',logging.ERROR,u"\n time out")
+            return 'fail'
+        except Exception , e:
+            LelianLogger.log('main',logging.ERROR,u"\n Exception".e)
+            return 'fail'
+ 
+        return response.read()
+
+    @staticmethod
+    def login(loginName,loginPwd):
+        filename = 'cookie.txt'
+        cookie = cookielib.MozillaCookieJar(filename)
+        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
+        postdata = urllib.urlencode({
+                    'log':loginName,
+                    'pwd':loginPwd
+                })
+    
+        signkey = lelianStore.getsign(lelianStore.APPKEY,'account')
+        loginUrl = 'http://www.microlele.com/dev/wp-login.php'
+        #print loginUrl
+        
+        #send the request to the url
+        req = urllib2.Request(loginUrl,postdata)
+        req.add_header('User-agent',FIREFOX)
+        #result = opener.open(loginUrl,postdata)
+        result = opener.open(req)
+        
+        cookie.save(ignore_discard=True, ignore_expires=True)
+        
+        loginres = result.read()
+        return loginres 
+
+    @staticmethod
+    def postarticle(title,content):
+        cookie = cookielib.MozillaCookieJar()
+        cookie.load('cookie.txt', ignore_discard=True, ignore_expires=True)
+    
+        #title   = urllib.quote(title)
+        title    = title.encode('utf-8')
+     
+        #content = Html2UBB(content)
+        #content = urllib.quote(content)
+        content = content.encode('utf-8')
+    
+        values = {'title':title,
+                  'message':content,
+                  'category_id':1
+                 }
+    
+        data    = urllib.urlencode(values)
+        
+        signkey = lelianStore.getsign(lelianStore.APPKEY,'publish')
+        publishUrl = 'http://wc.lelianyanglao.com/api/publish/publish_article/?mobile_sign='+signkey
+        
+        req = urllib2.Request(publishUrl,data)
+        req.add_header('User-agent',FIREFOX)
+    
+        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
+        response = opener.open(req)
+        res =  response.read()
+        return res
+ 
+    def __init__(self):
+        pass
+
+    def store(self,title,content):
+        wp_url      = "http://www.microlele.com/dev/wp-json/wp/v2/posts"
+        wp_url_tags = "http://www.microlele.com/dev/wp-json/wp/v2/tags"
+        username    = "Admin" 
+        password    = "Tjjtds@1"
+
+        try:
+            page_content = content;
+            title        = title;
+         
+            wp_data['status']  = "draft"
+            wp_data['title']   = title 
+            wp_data['content'] = page_content
+            wp_data['author']  = 1
+            #wp_data['slug'] = "test"
+            #wp_data['categories[0]'] = ready_cate_id
+         
+            #for tag_i in range(len(page_tags)):
+            #   print(page_tags[tag_i])
+            #   wp_data["tags["+str(tag_i)+"]"] = old_tags[page_tags[tag_i].decode('utf-8')]
+            res = Store2Weilele.http_auth_post(username,password,wp_url,wp_data,wp_headers)
+         
+            if (res == "fail"):
+                LelianLogger.log('main',logging.ERROR,u"\nSaving page to weilele failed.")
+            else:
+                LelianLogger.log('main',logging.INFO,u"\nSaving page to weilele successfully.")
+        except Exception , e:
+            LelianLogger.log('main',logging.ERROR,u"\nSaving page to weilele failed. Exception:".e)
+
+
     

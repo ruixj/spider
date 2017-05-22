@@ -21,20 +21,25 @@ from  processor import *
 from pip._vendor.requests.packages.urllib3 import filepost
 
 from pagestore import *
+from posters.weilele import *
 
 FIREFOX  = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'
 
 class URLMainProcessor:
+    def __init__(self,poster):
+        self.poster = poster 
     def geturls(self,start_id,page_size,page_num):
      
-        values = {'start_id':start_id,
-                  'page_size':page_size,
-                  'p':page_num
+        values = {'startpos':start_id,
+                  'count':page_size
                  }
-        headers = {'User-Agent':FIREFOX}
+
+        send_headers = {'User-Agent':FIREFOX}
         data    = urllib.urlencode(values)
         try:
-            req = urllib2.Request('http://m.lelianyanglao.com/index.php?m=api&a=get_splider_list',data,headers)
+            url = 'http://localhost:8080/seckill/postlinks/page?'+ data;
+            req = urllib2.Request(url,headers=send_headers)
+            print url
             response = urllib2.urlopen(req)
             urls = response.read()
             return urls 
@@ -51,29 +56,33 @@ class URLMainProcessor:
             jsonUrlObj = json.loads(jsonUrlsStr)
     
             if (jsonUrlObj["result"]["code"] == "OK"):
-                reccount     = jsonUrlObj["data"]["data_recode_count"]
+                reccount     = jsonUrlObj["resultData"]["count"]
                 #rec_count    = int(reccount)
-                record_count = string.atoi(reccount);
+                record_count = reccount
+                #record_count = string.atoi(reccount);
     
                 if(record_count > 0):
                     #last_startid += record_count
-                    recordlist = jsonUrlObj["data"]["data_record_list"]
+                    recordlist = jsonUrlObj["resultData"]["plLst"]
                     for record in recordlist:
                         title = record["title"]
                         
-                        LelianLogger.log('main',logging.INFO,u"\nprocessing : %s，page url: %s",title,record["link_url"])
-                        #title = title.encode('utf-8')
-                        #print '\nprocessing ',title,'\n','page url:',record["link_url"]
+                        LelianLogger.log('main',logging.INFO,u"\nprocessing : %s，page url: %s",title,record["linkName"])
+
                         contentProvider = UrlContentProvider()
-                        pageContent = contentProvider.getContent(record["link_url"])
+                        pageContent     = contentProvider.getContent(record["linkName"])
+                        #titleProcessor  = TitleProcessor()
+                        #title           =  titleProcessor.process(pageContent)
+
+                        LelianLogger.log('main',logging.INFO,u"\nprocessing : %s，page url: %s",title,record["linkName"])
+
                         #pageContent = getPageContent(record["link_url"])
                         if pageContent:
-    
                             scriptProcessor = ScriptProcessor()
                             params = {'pageContent':pageContent}
                             pageContent = scriptProcessor.process(**params)
                             
-                            pageBaseUri  = getPageUrlBaseUri(record["link_url"])
+                            pageBaseUri  = getPageUrlBaseUri(record["linkName"])
                             #print "page baseUri:", pageBaseUri
                             LelianLogger.log('main',logging.INFO,u"\npage baseUri: %s",pageBaseUri)
                             if pageBaseUri:
@@ -87,10 +96,25 @@ class URLMainProcessor:
                                 txtImgProcessor = TxtImgProcessor()
                                 pageContent = txtImgProcessor.process(**params)
     
+                                params = {'pageContent':pageContent}
+                                firstImgProcessor = FirstImgProcessor()
+                                firstImgUrl = firstImgProcessor.process(**params)
+                                print firstImgUrl
+    
+
                                 #mkdir(title)
                                 #savePage(title,pageContent)
-                                store = Store2File()
-                                store.store(title, content) 
+                                #store = Store2File()
+                                #store.store(title, pageContent) 
+                                fImgId = None
+                                if firstImgUrl:
+                                    #download file
+                                    fImgJson = self.poster.media2wp(firstImgUrl,pageSeq,u'./')
+                                    if fImgJson:
+                                        fImgObj  = json.loads(fImgJson)
+                                        fImgId   = fImgObj['id']
+
+                                self.poster.post2wp(title,pageContent,fImgId)
     
                                 #login("tangzhen","123456")
                                 #postarticle(title,pageContent)
@@ -187,6 +211,12 @@ class FileMainProcessor:
     
 if __name__ == '__main__':
     LelianLogger.configLog('logging.conf')
-    #mainProcessor = URLMainProcessor()
-    mainProcessor = FileMainProcessor()
+
+    wpposter = WPPoster()
+    mainProcessor = URLMainProcessor(wpposter)
+
+    #mainProcessor = FileMainProcessor()
     mainProcessor.main()
+    #jsonstr = mainProcessor.geturls(1,20,0)
+    #print jsonstr
+
