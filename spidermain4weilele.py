@@ -151,7 +151,7 @@ class URLMainProcessor:
     
     def main(self):
         last_startid = self.read_last_startid()
-        print last_startid
+        #print last_startid
         #last_startid +=1
         while True:
             last_startid = self.loop_body(last_startid)
