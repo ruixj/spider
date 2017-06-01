@@ -39,7 +39,7 @@ class URLMainProcessor:
         try:
             url = 'http://localhost:8080/seckill/postlinks/page?'+ data;
             req = urllib2.Request(url,headers=send_headers)
-            print url
+            #print url
             response = urllib2.urlopen(req)
             urls = response.read()
             return urls 
