@@ -73,6 +73,8 @@ def processChildren2(elem,news,newsoup):
             continue
 
 def processChildren(elem,news,newsoup):
+    if not elem :
+       return 
     for child in elem.contents:
         if isinstance(child,bs4.element.Tag):
             unlikelyMatchString = child.get('id','')+''.join(child.get('class',''))
