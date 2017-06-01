@@ -99,7 +99,7 @@ class URLMainProcessor:
                                 params = {'pageContent':pageContent}
                                 firstImgProcessor = FirstImgProcessor()
                                 firstImgUrl = firstImgProcessor.process(**params)
-                                print firstImgUrl
+                                #print firstImgUrl
     
 
                                 #mkdir(title)
@@ -161,7 +161,7 @@ class URLMainProcessor:
     
             time.sleep(3*60)
              
-            print last_startid
+            #print last_startid
 
 class FileMainProcessor:
     def loop_body(self,filePath):

@@ -64,7 +64,8 @@ class WPPoster:
             wp_data['title']   =  title 
             wp_data['content'] = page_content
             wp_data['author']  = 1
-            wp_data['categories'] ='69,84,57' 
+            #wp_data['categories'] ='69,84,57' 
+            wp_data['categories'] ='88' # 小助手
             if fImgId:
                 wp_data['featured_media'] = fImgId
             #wp_data['slug'] = "test"
