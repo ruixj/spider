@@ -46,6 +46,12 @@ class UrlContentProvider(ContentProvider):
                 #print u"Fail to get page from ",url
                 LelianLogger.log('main',logging.ERROR,u"\nFail to get page from %s",url)
                 return None
+
+        except ValueError as e:
+            LelianLogger.log('main',logging.ERROR,e)
+            return None
+        except:
+            LelianLogger.log('main',logging.ERROR,u"\n some except happening while processing %s",url)
             
 class FileContentProvider(ContentProvider):    
     '''
