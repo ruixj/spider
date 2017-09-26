@@ -223,12 +223,20 @@ class FirstImgProcessor(ProcessorInterface):
         '''     
     def process(self,**kwargs):  
         wxsoup = BeautifulSoup(kwargs['pageContent'])
-        print kwargs['pageContent']
-        firstImg= wxsoup.find("img",attrs={'src': True})
-        imgurl = None 
-        print firstImg
-        if firstImg:
-            imgurl = firstImg['src']
+        #print kwargs['pageContent']
+        #firstImg= wxsoup.find("img",attrs={'src': True})
+        Imglist= wxsoup.find_all("img",attrs={'src': True})
+        ImgNum = len(Imglist)
+        if ImgNum == 1:
+          imgurl = Imglist[0]['src']
+        elif ImgNum > 1:
+          imgurl = Imglist[1]['src']
+        else:
+            imgurl = None 
+        #print imgurl 
+        #print firstImg
+        #if firstImg:
+        #    imgurl = firstImg['src']
         #name = soup.find('img')
 
         return imgurl 

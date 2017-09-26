@@ -95,10 +95,10 @@ class Crawl_helper_tools_url:
         try:
             response = urllib2.urlopen(req,timeout=5)
         except socket.timeout:
-            print('except time out')
+            #print('except time out')
             return 'fail'
         except Exception , e:
-            print Exception,":",e
+            #print Exception,":",e
             #print('except open URL time out')
             return 'fail'
 

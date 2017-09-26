@@ -188,7 +188,7 @@ class FileMainProcessor:
                       'pageBaseUri':' '}
             pageContent  = imgProcessor.process(**params)
 
-            print pageContent
+            #print pageContent
             params = {'pageContent':pageContent}
             txtImgProcessor = TxtImgProcessor()
             pageContent = txtImgProcessor.process(**params)
